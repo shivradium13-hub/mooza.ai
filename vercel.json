@@ -1,5 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "echo 'Skipped: see the build step.'",
-  "buildCommand": "echo 'ERROR: building from the repo root. The Next.js app is apps/web. Fix: Settings > Build and Deployment > Root Directory = apps/web, then redeploy. See docs/deployment.md 2.2.' && exit 1"
+  "buildCommand": "echo 'FIX: set Root Directory to apps/web (Settings > Build and Deployment), then redeploy.' && exit 1"
 }
