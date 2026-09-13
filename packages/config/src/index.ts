@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { config as loadDotenv } from 'dotenv';
 import { ConfigurationError } from '@moka/core';
 import {
@@ -11,6 +13,31 @@ export { envSchema, findLeakyPublicVars, findProductionViolations } from './env.
 export type { Env } from './env.js';
 
 let cached: Env | null = null;
+
+/**
+ * The nearest `.env`, searching upward from the working directory.
+ *
+ * dotenv's default is `process.cwd()/.env`, which is wrong in a workspace:
+ * Turborepo runs each package's task with that package as the cwd, so
+ * `turbo run dev` started the API in `apps/api`, found no `.env` there, and
+ * refused to boot with DATABASE_URL, ENCRYPTION_KEY and AUTH_SECRET all
+ * "Required" — while a correctly filled `.env` sat at the repository root.
+ * The quick start in the README could not have worked.
+ *
+ * Walking up finds that one file from any package. Returns undefined when
+ * there is none, which is the normal case in production: the platform sets
+ * real environment variables and there is no file to read.
+ */
+function findEnvFile(from: string = process.cwd()): string | undefined {
+  let dir = from;
+  for (;;) {
+    const candidate = join(dir, '.env');
+    if (existsSync(candidate)) return candidate;
+    const parent = dirname(dir);
+    if (parent === dir) return undefined;
+    dir = parent;
+  }
+}
 
 export interface LoadConfigOptions {
   /** Defaults to process.env. Injectable for tests. */
@@ -29,7 +56,8 @@ export function loadConfig(options: LoadConfigOptions = {}): Env {
   if (cached && !options.fresh && !options.source) return cached;
 
   if (options.dotenv !== false && !options.source) {
-    loadDotenv();
+    const envFile = findEnvFile();
+    loadDotenv(envFile ? { path: envFile } : undefined);
   }
 
   const source = options.source ?? (process.env as Record<string, string | undefined>);
