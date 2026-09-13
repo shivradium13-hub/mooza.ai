@@ -1,9 +1,19 @@
-# MOKA AI
+# MOOZA AI
 
 Multi-tenant AI workspace and AI workforce platform.
 
-> **Standalone product.** MOKA AI shares no code, data, users, APIs, business
+> **Standalone product.** MOOZA AI shares no code, data, users, APIs, business
 > logic, branding or configuration with any other product.
+
+> **On the name.** The product was renamed from MOKA AI. Prose and every
+> user-visible surface say MOOZA; identifiers deliberately still say `moka`,
+> and that is not an oversight. The PostgreSQL roles `moka_app` and
+> `moka_migrator`, the database `moka_ai`, the `@moka/*` workspace packages,
+> the `moka-visitor` cookie, the crawler's `MokaAI-Crawler/1.0` user agent and
+> the chatbot embed's `moka-chat.js` / `data-moka-key` are contracts with a
+> running database, with published widgets, and with site owners who may have
+> already allowlisted that agent string. Renaming them is a migration, not a
+> find-and-replace, and each one breaks something different if done alone.
 
 **Status: Phase 5 (Agent Engine) complete.** Phases 1–5 delivered:
 
@@ -329,7 +339,7 @@ nothing more.
 
 ---
 
-## Moka Credentials
+## Mooza Credentials
 
 Provider API keys are stored under envelope encryption: a root key wraps a
 per-organization data key, which encrypts each credential.

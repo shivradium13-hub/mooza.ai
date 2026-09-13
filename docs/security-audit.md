@@ -1,6 +1,6 @@
 # Security audit
 
-**Scope:** MOKA AI, phases 1–10 (Phase 8 partial), as of 2026-09-07.
+**Scope:** MOOZA AI, phases 1–10 (Phase 8 partial), as of 2026-09-07.
 **Method:** design review against the implementation, plus 249 automated assertions in 12 security suites and 32 in 3 operational drills, all run against real PostgreSQL 16 with the production role model.
 **Auditor:** the same party that wrote the code. That is a real limitation and §11 says what it means.
 

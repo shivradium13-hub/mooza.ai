@@ -1,4 +1,4 @@
-# MOKA AI — Security Architecture
+# MOOZA AI — Security Architecture
 
 > **Status:** Phase 0 (design). Nothing here is implemented yet.
 > Everything in this document is a requirement on the build, not a description of current state.
@@ -7,7 +7,7 @@
 
 ## 1. Threat model
 
-MOKA AI is a multi-tenant platform where a language model, influenced by untrusted text, can invoke tools that touch customer data. That combination defines the threat model.
+MOOZA AI is a multi-tenant platform where a language model, influenced by untrusted text, can invoke tools that touch customer data. That combination defines the threat model.
 
 | # | Threat | Impact | Primary control |
 |---|---|---|---|
@@ -70,7 +70,7 @@ This is the control that matters most: a query that forgets its `WHERE organizat
 
 ---
 
-## 3. Secrets and Moka Credentials (§4)
+## 3. Secrets and Mooza Credentials (§4)
 
 ### 3.1 Envelope encryption
 
@@ -106,7 +106,7 @@ Redaction is configured on the **logger and error serializers**, not applied at 
 
 ### 3.5 BYOK
 
-Bring-Your-Own-Key credentials use the identical vault and the identical rules. A BYOK credential is scoped to its organization and can never be selected by the router for another organization's request. MOKA AI claims no ownership of third-party models or APIs, and never bypasses provider authentication, licensing or terms.
+Bring-Your-Own-Key credentials use the identical vault and the identical rules. A BYOK credential is scoped to its organization and can never be selected by the router for another organization's request. MOOZA AI claims no ownership of third-party models or APIs, and never bypasses provider authentication, licensing or terms.
 
 ---
 

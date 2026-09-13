@@ -1,6 +1,6 @@
 # Operations
 
-Deployment, backup, restore, failure recovery and monitoring for MOKA AI.
+Deployment, backup, restore, failure recovery and monitoring for MOOZA AI.
 
 This is a runbook, not an overview. It is written for somebody who is tired, possibly at 3am, and needs the next command rather than the philosophy. Where a step has a non-obvious reason, the reason is given — because a step whose purpose is not understood is a step that gets skipped when it is inconvenient.
 
@@ -36,7 +36,7 @@ If a deploy fails with *"Refusing to start: the application connects as …"*, d
 | pnpm | 9+ | FREE |
 | Valkey (or Redis) | 7+ | FREE (Valkey is BSD; required in production) |
 
-No paid third-party service is required to run this system. The only necessary paid items are a server, a domain, and provider API usage, which each organization supplies for itself through Moka Credentials.
+No paid third-party service is required to run this system. The only necessary paid items are a server, a domain, and provider API usage, which each organization supplies for itself through Mooza Credentials.
 
 ### 2.2 First-time database setup
 

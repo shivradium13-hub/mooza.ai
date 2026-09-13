@@ -1,4 +1,4 @@
-# MOKA AI — Development Roadmap
+# MOOZA AI — Development Roadmap
 
 > **Status: Phases 1–7, 9 and 10 COMPLETE. Phase 8 PARTIALLY complete.**
 > Phase 8's five items split along the sandbox blocker: **MCP and
@@ -265,12 +265,12 @@ fixtures of those contracts — that is the strongest claim available here.
 | Planned | Actual | Reason |
 |---|---|---|
 | Gemini adapter | Registered in the catalogue, **adapter not implemented** | Listed as unavailable rather than half-built. Anthropic and OpenAI prove the abstraction; a third adds surface without adding confidence while none can be run. |
-| Per-organization credentials | Instance-wide env vars | Moka Credentials is Phase 4. `CredentialsService.resolve()` already takes a `TenantContext` it does not yet use, so the vault drops in without touching callers. |
+| Per-organization credentials | Instance-wide env vars | Mooza Credentials is Phase 4. `CredentialsService.resolve()` already takes a `TenantContext` it does not yet use, so the vault drops in without touching callers. |
 | Usage dashboard UI | API only (`GET /v1/ai/usage`) | Endpoint returns per-model totals plus recent calls, including an `unpricedCalls` count so the UI can say "cost unknown for N calls" instead of under-reporting. |
 
 ---
 
-## Phase 4 — completion record (Moka Credentials)
+## Phase 4 — completion record (Mooza Credentials)
 
 | Check | Result |
 |---|---|
@@ -1190,7 +1190,7 @@ Each phase closes only when its work is implemented, typed, tested, linted, buil
 |---|---|---|---|
 | **2 — Knowledge Engine** | Source system, uploads, parsers (PDF/DOCX/TXT/CSV/XLSX/JSON/MD/HTML), chunking, embeddings, pgvector, hybrid retrieval + RRF, knowledge UI, async pipeline | **Security suite 10** — Tenant A knowledge never surfaces for Tenant B | B1 resolved |
 | **3 — AI Gateway** | Provider abstraction, OpenAI/Anthropic/Gemini adapters, model registry, normalized streaming, capability router, fallbacks, usage tracking | Adapter conformance suite; provider-failure normalization | Phase 1 |
-| **4 — Moka Credentials** | Vault UI, encryption, BYOK, test/rotate/revoke, audit | **Security suite 3** in full | Phase 3 |
+| **4 — Mooza Credentials** | Vault UI, encryption, BYOK, test/rotate/revoke, audit | **Security suite 3** in full | Phase 3 |
 | **5 — Agent Engine** | Runtime loop, tool engine, permission levels, approval engine, budgets, audit | **Security suites 2, 5** | Phases 3, 4 |
 | **6 — Customer Chatbot** *(COMPLETE)* | Builder, widget bundle, deployments, support agent, customer boundary, handoff | **Security suite 8** ✅; widget contains no secret ✅ | Phase 5 |
 | **7 — Business Agents** *(COMPLETE)* | Templates, Path C research pipeline, website crawler, agent builder | **Security suite 6 (SSRF)** ✅; no fabricated citations ✅ | Phases 5, 6 |

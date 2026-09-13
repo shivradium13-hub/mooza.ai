@@ -1,7 +1,7 @@
-# MOKA AI — Architecture
+# MOOZA AI — Architecture
 
 > **Status:** Phase 0 (analysis). No application code written yet.
-> **Scope rule:** MOKA AI is a standalone product. No MokaStore code, data, users, APIs, branding or config is used or referenced anywhere.
+> **Scope rule:** MOOZA AI is a standalone product. No MokaStore code, data, users, APIs, branding or config is used or referenced anywhere.
 
 ---
 
@@ -99,7 +99,7 @@ This is why several choices above differ from the obvious default.
 ## 3. Recommended folder structure
 
 ```
-moka-ai/
+mooza.ai/
 ├─ apps/
 │  ├─ web/                 Next.js 15 — dashboard, chat, agent builder, admin
 │  ├─ api/                 NestJS/Fastify — REST + SSE. The ONLY process that writes to the DB.
@@ -147,7 +147,7 @@ Browser ─▶ apps/web ─▶ apps/api ─▶ AI Gateway ─▶ Model Router �
 
 1. Authenticate, then derive `TenantContext` (org, user, scopes). Never from the request body.
 2. Check entitlements and credit balance (§34/§35). Reject early if exhausted. **Implemented in Phase 9, and the ordering is load-bearing**: an explicitly requested model is checked against the plan's allowlist BEFORE routing, because routing resolves credentials and would otherwise answer "no credential is configured for anthropic" to a caller whose plan simply excludes that model — the wrong answer, and a leak of which providers this deployment has.
-3. Resolve the credential — Moka-managed or BYOK. Decrypt **in memory only**; never logged, never placed in prompts, never surfaced in errors.
+3. Resolve the credential — Mooza-managed or BYOK. Decrypt **in memory only**; never logged, never placed in prompts, never surfaced in errors.
 4. `ModelRouter.select(capabilities, policy)` returns `{provider, model, fallbacks[]}`.
 5. The adapter streams, producing a **normalized event union**.
 6. `UsageMeter` records tokens in/out, latency and estimated cost into `usage_records`.

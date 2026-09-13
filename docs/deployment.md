@@ -1,12 +1,12 @@
 # Deployment
 
-How to get MOKA AI running, and — more importantly — **which piece goes where**.
+How to get MOOZA AI running, and — more importantly — **which piece goes where**.
 
 ---
 
 ## 1. The short version
 
-MOKA AI is two deployable units with different shapes, and they do not belong on the same kind of host.
+MOOZA AI is two deployable units with different shapes, and they do not belong on the same kind of host.
 
 | Unit | What it is | Vercel? |
 |---|---|---|
@@ -135,7 +135,7 @@ Add the Vercel domain to the API's `CORS_ORIGINS`, or every authenticated reques
 
 ### 3.1 Create the service
 
-1. [railway.app/new](https://railway.app/new) → **Deploy from GitHub repo** → pick `moka.ai`.
+1. [railway.app/new](https://railway.app/new) → **Deploy from GitHub repo** → pick `mooza.ai`.
 2. Leave the root directory as the repository root. **Do not set it to `apps/api`** — the Dockerfile builds the whole workspace and the pnpm lockfile lives at the root.
 3. Railway detects `railway.json`, sees `"builder": "DOCKERFILE"`, and stops guessing.
 
@@ -231,7 +231,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 **Do not set `API_PORT`.** Same reason — it is derived.
 
-**Do not set `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` or `GEMINI_API_KEY`.** Production refuses to boot with them, on purpose: an instance-wide key means every organization spends the operator's key, which makes per-tenant cost attribution, quotas and revocation fictional. Provider credentials belong to an organization, added through Moka Credentials.
+**Do not set `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` or `GEMINI_API_KEY`.** Production refuses to boot with them, on purpose: an instance-wide key means every organization spends the operator's key, which makes per-tenant cost attribution, quotas and revocation fictional. Provider credentials belong to an organization, added through Mooza Credentials.
 
 What each one is for, and what happens if it is wrong:
 
@@ -373,7 +373,7 @@ Losing `ENCRYPTION_KEY` makes every stored provider credential unrecoverable. Th
 
 Stated plainly rather than discovered after launch (§45):
 
-- **No AI does anything without a provider credential.** No live model call has ever been made by this codebase. Add a credential per organization through Moka Credentials; instance-wide keys are refused in production.
+- **No AI does anything without a provider credential.** No live model call has ever been made by this codebase. Add a credential per organization through Mooza Credentials; instance-wide keys are refused in production.
 - **Retrieval is lexical, not semantic.** pgvector was unavailable during development. Isolation is enforced identically either way; quality is not.
 - **File uploads need a persistent disk.** See §3.1.
 - **Rate limiting is per-process.** See §3.2.

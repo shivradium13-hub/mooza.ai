@@ -1,4 +1,4 @@
-# MOKA AI — Database Design
+# MOOZA AI — Database Design
 
 > **Status:** Phase 0 (design). No migrations written yet.
 > Engine: **PostgreSQL 17.11** (already installed and running locally on :5432).
@@ -72,7 +72,7 @@ users ──< organization_members >── organizations
 
 **`models`** — `id`, `provider_id`, `model_key`, `display_name`, `capabilities text[]` (`coding`, `reasoning`, `vision`, `long_context`, `fast`, `cheap`), `context_window`, `max_output_tokens`, `input_cost_per_1m numeric(18,6)`, `output_cost_per_1m numeric(18,6)`, `supports_streaming`, `supports_tools`, `status`. Global registry; the router reads capabilities from here rather than hard-coding model names.
 
-**`credentials`** — the Moka Credentials vault.
+**`credentials`** — the Mooza Credentials vault.
 
 | Column | Notes |
 |---|---|
