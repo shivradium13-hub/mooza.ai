@@ -1,6 +1,5 @@
-# syntax=docker/dockerfile:1.7
 # =============================================================================
-# MOKA AI — API image
+# MOOZA AI — API image
 #
 # Builds `apps/api` (NestJS on Fastify) and the twelve workspace packages it
 # depends on, from a pnpm monorepo.
@@ -28,6 +27,14 @@
 # explicitly, since it is the one path that must be writable.
 #
 # NO MIGRATIONS AT STARTUP. Deliberate — see the note above CMD.
+#
+# PLAIN DOCKERFILE SYNTAX ONLY. This file once opened with a
+# `# syntax=docker/dockerfile:1.7` directive and cached the pnpm store with
+# `RUN --mount=type=cache`. Both need BuildKit, and a builder that does not
+# provide it rejects the file while parsing — before any step runs, so the
+# failure arrives in about two seconds with nothing useful in the log. The
+# cache mount only saved download time on rebuilds; correctness never depended
+# on it. Keep this file parseable by a plain Docker daemon.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Node 22 LTS. `engines` requires >=20.11.0; development used Node 24, so this
@@ -83,8 +90,7 @@ COPY packages/tenancy/package.json  packages/tenancy/
 # `--frozen-lockfile` is the point of this line: it fails rather than silently
 # resolving something new, so the image cannot quietly ship dependency versions
 # that were never tested.
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # --- Source, and the build itself.
 COPY tsconfig.base.json ./
@@ -125,8 +131,7 @@ COPY packages/tenancy/package.json  packages/tenancy/
 # toolchain. `--ignore-scripts` because no runtime dependency needs a
 # postinstall — esbuild is the only package that does, and it is a build
 # dependency that is not installed here.
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm install --frozen-lockfile --prod --ignore-scripts
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 # --- Compiled output. Each workspace package resolves through its `dist`, so
 # the symlinks pnpm just created need something to point at.
