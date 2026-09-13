@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: 'Security — tenant isolation, an encrypted vault, and guarded egress',
   description:
-    'The threat model behind MOKA AI: row-level security as the isolation backstop, envelope-encrypted credentials, authorization that never consults the prompt, and a single guarded egress point.',
+    'The threat model behind MOOZA AI: row-level security as the isolation backstop, envelope-encrypted credentials, authorization that never consults the prompt, and a single guarded egress point.',
 };
 
 /**

@@ -27,8 +27,8 @@ import {
 
 export const metadata: Metadata = {
   // Absolute: the home page's title already carries the brand, so the root
-  // layout's `%s · MOKA AI` template would only repeat it.
-  title: { absolute: 'MOKA AI — the AI workspace your compliance team can sign off on' },
+  // layout's `%s · MOOZA AI` template would only repeat it.
+  title: { absolute: 'MOOZA AI — the AI workspace your compliance team can sign off on' },
   description:
     'Documents, agents, research and customer chatbots in one multi-tenant workspace. Every model call metered, every citation traced to a page actually fetched, every consequential action approved by a human.',
 };
@@ -96,7 +96,7 @@ function Hero() {
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-pretty text-muted">
-              MOKA AI puts your documents, your agents and your models in one place — then keeps a
+              MOOZA AI puts your documents, your agents and your models in one place — then keeps a
               record of every retrieval, every model call and every action, so an answer can be
               checked six months after it was given.
             </p>
@@ -144,7 +144,7 @@ function Surfaces() {
       <SectionHeading
         eyebrow="One workspace"
         title="Four surfaces, one set of documents and one bill."
-        description="Most teams end up with a chatbot in one tool, a knowledge base in another and an agent script nobody owns. MOKA AI is the workspace those three should have been."
+        description="Most teams end up with a chatbot in one tool, a knowledge base in another and an agent script nobody owns. MOOZA AI is the workspace those three should have been."
       />
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {SURFACES.map((surface) => (

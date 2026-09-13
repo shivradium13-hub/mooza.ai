@@ -42,7 +42,7 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <h1 className="text-lg font-semibold tracking-tight">MOKA AI</h1>
+          <h1 className="text-lg font-semibold tracking-tight">MOOZA AI</h1>
           <p className="mt-1 text-xs text-[--color-muted]">Sign in to your workspace</p>
         </div>
 

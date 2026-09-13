@@ -48,7 +48,7 @@ export default async function DashboardPage() {
           {[
             ['Knowledge engine, RAG, pgvector', 'Phase 2'],
             ['AI gateway, model router, streaming', 'Phase 3'],
-            ['Moka Credentials vault, BYOK', 'Phase 4'],
+            ['Mooza Credentials vault, BYOK', 'Phase 4'],
             ['Agent runtime, tools, approvals', 'Phase 5'],
             ['Website chatbot and widget', 'Phase 6'],
           ].map(([label, phase]) => (

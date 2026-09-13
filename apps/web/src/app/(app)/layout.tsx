@@ -41,7 +41,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="border-b border-[--color-line] bg-white">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4">
           <Link href="/dashboard" className="text-sm font-semibold tracking-tight">
-            MOKA AI
+            MOOZA AI
           </Link>
 
           <nav className="flex items-center gap-1">

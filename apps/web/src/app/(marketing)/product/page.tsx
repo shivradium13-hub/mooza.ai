@@ -19,7 +19,7 @@ import {
 export const metadata: Metadata = {
   title: 'Product — knowledge, agents, research and chatbots',
   description:
-    'A tour of the four surfaces in a MOKA AI workspace and the gateway underneath them: how documents are indexed, how agents are constrained, how citations are verified, and how model usage is metered.',
+    'A tour of the four surfaces in a MOOZA AI workspace and the gateway underneath them: how documents are indexed, how agents are constrained, how citations are verified, and how model usage is metered.',
 };
 
 /**

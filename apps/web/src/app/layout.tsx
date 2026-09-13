@@ -13,22 +13,22 @@ export const metadata: Metadata = {
   // is derived on Vercel when no domain is configured yet.
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'MOKA AI — the AI workspace your compliance team can sign off on',
-    template: '%s · MOKA AI',
+    default: 'MOOZA AI — the AI workspace your compliance team can sign off on',
+    template: '%s · MOOZA AI',
   },
   description:
     'Documents, agents, research and customer chatbots in one multi-tenant AI workspace — with the audit trail that makes it usable at work.',
-  applicationName: 'MOKA AI',
+  applicationName: 'MOOZA AI',
   openGraph: {
     type: 'website',
-    siteName: 'MOKA AI',
-    title: 'MOKA AI — the AI workspace your compliance team can sign off on',
+    siteName: 'MOOZA AI',
+    title: 'MOOZA AI — the AI workspace your compliance team can sign off on',
     description:
       'Every model call metered, every citation traced to a page actually fetched, every consequential action approved by a human.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MOKA AI',
+    title: 'MOOZA AI',
     description:
       'One workspace for your documents, your agents and your models — with the audit trail that makes it usable at work.',
   },

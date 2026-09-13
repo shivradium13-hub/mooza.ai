@@ -35,7 +35,7 @@ export default async function CredentialsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Moka Credentials</h1>
+        <h1 className="text-xl font-semibold tracking-tight">Mooza Credentials</h1>
         <p className="mt-1 text-xs text-[--color-muted]">
           Provider API keys for this organization. Keys are encrypted with a key unique to your
           organization and are never shown again after you save them.

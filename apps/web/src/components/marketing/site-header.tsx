@@ -31,9 +31,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-line/80 bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="MOKA AI home">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="MOOZA AI home">
           <Wordmark className="h-7 w-7" />
-          <span className="text-[15px] font-semibold tracking-tight">MOKA AI</span>
+          <span className="text-[15px] font-semibold tracking-tight">MOOZA AI</span>
         </Link>
 
         <nav aria-label="Main" className="ml-6 hidden items-center gap-1 md:flex">

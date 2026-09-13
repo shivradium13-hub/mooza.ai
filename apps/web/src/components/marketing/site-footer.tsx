@@ -44,9 +44,9 @@ export function SiteFooter() {
       <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8">
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div className="max-w-xs">
-            <Link href="/" className="flex items-center gap-2.5" aria-label="MOKA AI home">
+            <Link href="/" className="flex items-center gap-2.5" aria-label="MOOZA AI home">
               <Wordmark className="h-7 w-7" />
-              <span className="text-[15px] font-semibold tracking-tight">MOKA AI</span>
+              <span className="text-[15px] font-semibold tracking-tight">MOOZA AI</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">
               One workspace for your documents, your agents and your models — with the audit trail
@@ -73,7 +73,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-line pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} MOKA AI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} MOOZA AI. All rights reserved.</p>
           <p>Built to be auditable: every model call, retrieval and approval is on the record.</p>
         </div>
       </div>
