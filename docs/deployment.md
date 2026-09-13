@@ -87,6 +87,22 @@ Only one is required:
 
 `NEXT_PUBLIC_SITE_URL` is optional because `lib/site.ts` falls back to Vercel's `VERCEL_PROJECT_PRODUCTION_URL`, so a first deploy emits correct absolute urls with nothing configured rather than advertising `localhost` to a crawler. Set it explicitly once a custom domain is attached: it is the one value a domain change does not invalidate. The fallback deliberately uses the *production* url and not `VERCEL_URL`, which is per-deployment — canonicals built from that would point at a preview that stops existing.
 
+### 2.4a There is deliberately no `ignoreCommand`
+
+`apps/web/vercel.json` once carried one, to skip rebuilds when nothing the web app depends on had changed:
+
+```
+git diff --quiet HEAD^ HEAD -- ../../apps/web ../../packages ../../pnpm-lock.yaml ../../turbo.json
+```
+
+It cost this project its first production deploy. The root `vercel.json` is not on that path list, so a commit touching only root config produced no diff, the command exited 0, and Vercel skipped the build — which it reports as **CANCELED**, indistinguishable at a glance from a failure.
+
+Two further faults in the same line: `HEAD^` is not the previously deployed commit, so a push of several commits only ever examined the last one; and a first deploy has nothing to compare against.
+
+`turbo-ignore` gets all of this right because it reads the dependency graph, but it is deprecated in favour of `turbo query affected`. Until someone needs the optimisation enough to do it properly, every push builds. It is worth well under a minute here, and a deploy that silently does not happen costs far more.
+
+Note also that `vercel.json` rejects unknown keys — including `_comment` style ones. Explanations go here, not in the file.
+
 ### 2.4b The public site
 
 `/`, `/product`, `/pricing` and `/security` are the marketing site and are public. The first is server-rendered because it still routes a signed-in visitor to their dashboard; the other three prerender to static HTML and are served from the CDN.

@@ -4,7 +4,6 @@
   "installCommand": "cd ../.. && npx --yes pnpm@12.3.4 install --frozen-lockfile",
   "buildCommand": "cd ../.. && npx --yes pnpm@12.3.4 exec turbo run build --filter=@moka/web...",
   "outputDirectory": ".next",
-  "_comment_ignoreCommand": "There is deliberately no ignoreCommand. The previous one compared HEAD^ to HEAD over a hand-written path list that omitted the root vercel.json, so a commit touching only root config skipped the build — and Vercel reports a skip as CANCELED, which reads like a failure. Skipping is a build-time optimisation worth well under a minute here; a deploy that silently does not happen costs far more. turbo-ignore would do this correctly but is deprecated in favour of `turbo query affected`. Re-add it with that when the build is slow enough to be worth the risk.",
   "headers": [
     {
       "source": "/(.*)",
