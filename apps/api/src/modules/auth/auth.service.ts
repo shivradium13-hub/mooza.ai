@@ -177,6 +177,48 @@ export class AuthService {
     return { userId: user.id };
   }
 
+  /**
+   * Change a signed-in user's password.
+   *
+   * The current password is required even though the caller already holds a
+   * valid session. A session can be taken — a borrowed laptop, a stolen
+   * cookie — and without this check the very first thing the taker does is
+   * change the password and lock the owner out permanently. Re-asking makes
+   * possession of the session insufficient on its own.
+   *
+   * Verification goes through the stored hash by USER ID rather than by email,
+   * because the caller is already identified; asking them to re-type their
+   * address would add a field that proves nothing.
+   *
+   * Returns nothing. Revoking the other sessions is the caller's job, so that
+   * the one making the request can be kept alive deliberately rather than by
+   * accident — see the controller.
+   */
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const rows = await this.db.global
+      .select({ id: users.id, passwordHash: users.passwordHash })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    const user = rows[0];
+    if (!user) throw new InvalidCredentialsError('No user row for that id.');
+
+    const valid = await verifyPassword(currentPassword, user.passwordHash);
+    if (!valid) {
+      throw new InvalidCredentialsError('Current password verification failed.');
+    }
+
+    await this.db.global
+      .update(users)
+      .set({ passwordHash: await hashPassword(newPassword) })
+      .where(eq(users.id, userId));
+  }
+
   /** Must satisfy the organizations_slug_format check constraint. */
   static slugify(name: string): string {
     const slug = name

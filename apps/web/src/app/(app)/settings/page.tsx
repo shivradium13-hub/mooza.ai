@@ -1,5 +1,6 @@
 import { serverApiOrNull } from '@/lib/api-server';
 import { Card, CardHeader, EmptyState } from '@/components/ui';
+import { ChangePassword } from '@/components/change-password';
 
 interface OrganizationResponse {
   organization: { id: string; name: string; slug: string; createdAt: string };
@@ -33,6 +34,8 @@ export default async function SettingsPage() {
           <Row label="Organization ID" value={org?.organization.id ?? '—'} mono />
         </dl>
       </Card>
+
+      <ChangePassword />
 
       <Card>
         <CardHeader

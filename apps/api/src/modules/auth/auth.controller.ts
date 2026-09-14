@@ -29,6 +29,21 @@ const loginSchema = z.object({
   password: z.string().min(1).max(200),
 });
 
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1).max(200),
+    // Same floor as registration. A change endpoint that accepts weaker
+    // passwords than sign-up is a downgrade path around the sign-up rule.
+    newPassword: z
+      .string()
+      .min(12, 'Password must be at least 12 characters.')
+      .max(200, 'Password must be at most 200 characters.'),
+  })
+  .refine((v) => v.currentPassword !== v.newPassword, {
+    message: 'The new password must be different from the current one.',
+    path: ['newPassword'],
+  });
+
 const switchOrgSchema = z.object({
   organizationId: z.string().uuid(),
 });
@@ -112,7 +127,10 @@ export class AuthController {
 
   @AllowNoOrganization()
   @Post('logout')
-  async logout(@Req() request: AuthenticatedRequest, @Res({ passthrough: true }) reply: FastifyReply) {
+  async logout(
+    @Req() request: AuthenticatedRequest,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ) {
     if (request.sessionId) await this.sessions.revoke(request.sessionId);
     /*
      * Cleared with the SAME attributes it was set with. A browser matches a
@@ -127,6 +145,47 @@ export class AuthController {
       ...(loadConfig().COOKIE_DOMAIN ? { domain: loadConfig().COOKIE_DOMAIN } : {}),
     });
     return { ok: true };
+  }
+
+  /**
+   * Change the signed-in user's password.
+   *
+   * EVERY session is revoked afterwards, the caller's included, and the cookie
+   * is cleared — so a password change signs you out everywhere and you sign in
+   * again with the new one.
+   *
+   * Keeping the current session alive would be friendlier and is the wrong
+   * trade. People change a password precisely when they think somebody else
+   * has access; a change that leaves the other party's session working does
+   * not do the thing it was reached for. Revoking the caller's own session too
+   * is what makes "everywhere" true rather than "everywhere except whichever
+   * one happened to ask".
+   */
+  @AllowNoOrganization()
+  @Post('change-password')
+  async changePassword(
+    @Body() body: unknown,
+    @Req() request: AuthenticatedRequest,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ) {
+    const userId = request.userId;
+    if (!userId) throw new ForbiddenError('No authenticated user.');
+
+    const input = parse(changePasswordSchema, body);
+
+    // Guessing the current password from inside a stolen session is still
+    // guessing, and gets the same treatment as guessing it at the login form.
+    await enforceRateLimit(this.rateLimiter, `password:${userId}`, 5, 900);
+
+    await this.auth.changePassword(userId, input.currentPassword, input.newPassword);
+    await this.sessions.revokeAllForUser(userId);
+
+    void reply.clearCookie(SESSION_COOKIE, {
+      path: '/',
+      ...(loadConfig().COOKIE_DOMAIN ? { domain: loadConfig().COOKIE_DOMAIN } : {}),
+    });
+
+    return { ok: true, signedOut: true };
   }
 
   @AllowNoOrganization()
@@ -153,10 +212,7 @@ export class AuthController {
    */
   @AllowNoOrganization()
   @Post('switch-organization')
-  async switchOrganization(
-    @Body() body: unknown,
-    @Req() request: AuthenticatedRequest,
-  ) {
+  async switchOrganization(@Body() body: unknown, @Req() request: AuthenticatedRequest) {
     const input = parse(switchOrgSchema, body);
     const userId = request.userId;
     const sessionId = request.sessionId;

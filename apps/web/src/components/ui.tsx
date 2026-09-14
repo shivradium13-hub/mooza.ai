@@ -63,6 +63,7 @@ export function Field({
   defaultValue,
   placeholder,
   hint,
+  autoComplete,
 }: {
   label: string;
   name: string;
@@ -71,6 +72,8 @@ export function Field({
   defaultValue?: string;
   placeholder?: string;
   hint?: string;
+  /** Defaults to `current-password` for password inputs; set `new-password` on a change or sign-up form so browsers offer to generate and store the new one instead of refilling the old. */
+  autoComplete?: string;
 }) {
   return (
     <label className="block">
@@ -81,7 +84,7 @@ export function Field({
         required={required}
         defaultValue={defaultValue}
         placeholder={placeholder}
-        autoComplete={type === 'password' ? 'current-password' : undefined}
+        autoComplete={autoComplete ?? (type === 'password' ? 'current-password' : undefined)}
         className="h-9 w-full rounded-lg border border-line bg-white px-3 text-sm outline-none focus:border-accent"
       />
       {hint ? <span className="mt-1 block text-xs text-muted">{hint}</span> : null}
