@@ -64,6 +64,14 @@ export const envSchema = z.object({
   DATABASE_MIGRATION_URL: postgresUrl.optional(),
   DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(100).default(10),
   DATABASE_SSL: booleanish.default('false'),
+  /*
+   * PEM for a private CA, when the database's certificate is not signed by one
+   * the system trusts. Optional, and NOT a way to relax anything: with it the
+   * chain and the hostname are both still verified. Without it, a server using
+   * its own CA is simply refused — which is the correct outcome, not a bug to
+   * work around with `rejectUnauthorized: false`.
+   */
+  DATABASE_CA_CERT: z.string().optional(),
 
   REDIS_URL: z.string().optional(),
 

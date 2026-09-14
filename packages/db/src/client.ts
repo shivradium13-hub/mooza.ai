@@ -45,6 +45,18 @@ export interface DatabaseOptions {
   connectionString: string;
   poolMax?: number;
   ssl?: boolean;
+  /**
+   * PEM for a private certificate authority, when the server's certificate is
+   * not signed by one the system already trusts.
+   *
+   * This is the normal case for a managed Postgres that issues its own
+   * certificates — Railway, RDS and DigitalOcean all publish a CA for exactly
+   * this. Supplying it keeps verification FULL: the chain is still checked and
+   * the hostname must still match the certificate. It is the opposite of
+   * `rejectUnauthorized: false`, which would accept any certificate at all and
+   * leave the connection open to interception by whatever answers the address.
+   */
+  caCert?: string;
 }
 
 /**
@@ -64,7 +76,9 @@ export class Database {
     this.pool = new pg.Pool({
       connectionString: options.connectionString,
       max: options.poolMax ?? 10,
-      ...(options.ssl ? { ssl: { rejectUnauthorized: true } } : {}),
+      ...(options.ssl
+        ? { ssl: { rejectUnauthorized: true, ...(options.caCert ? { ca: options.caCert } : {}) } }
+        : {}),
       // A connection must never carry a leftover app.current_org_id.
       // SET LOCAL is transaction-scoped, so this is belt-and-braces.
       allowExitOnIdle: false,

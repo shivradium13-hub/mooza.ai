@@ -24,6 +24,7 @@ export const DATABASE = Symbol('DATABASE');
           connectionString: config.DATABASE_URL,
           poolMax: config.DATABASE_POOL_MAX,
           ssl: config.DATABASE_SSL,
+          caCert: config.DATABASE_CA_CERT,
         });
       },
     },
