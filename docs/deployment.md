@@ -254,6 +254,37 @@ What each one is for, and what happens if it is wrong:
 | `SEARXNG_URL` | no | Only if you self-host SearXNG for web search |
 | `BILLING_MANUAL_PAYMENTS` | no | `true` lets an admin activate a paid plan against an off-system payment |
 
+### 3.3b Two SSL traps, both of which crash the API on boot
+
+Railway's Postgres (`ghcr.io/railwayapp-templates/postgres-ssl`) issues its own certificate, and the client asks for full verification. Getting a working deployment meant clearing both of these, in this order.
+
+**Trap 1 — the CA is not one the system trusts.** The boot log says only:
+
+```
+self-signed certificate in certificate chain
+```
+
+The certificate is otherwise fine: it is issued by a CA named `root-ca` and carries `subjectAltName = DNS:postgres-ssl.railway.internal`, which is exactly the host the API dials. Supply that CA in `DATABASE_CA_CERT` and verification succeeds. It does **not** relax anything — the chain is still checked and the hostname must still match. Extract it from a running instance:
+
+```
+openssl s_client -starttls postgres -connect <public-proxy-host>:<port> -showcerts
+```
+
+and take the last certificate in the chain.
+
+**Trap 2 — `?sslmode=require` in the URL silently discards that CA.** This is the one that wastes an afternoon, because the symptom is identical to trap 1: the same `self-signed certificate in certificate chain`, with the CA correctly set.
+
+`node-postgres` parses `sslmode` out of the connection string and builds its own SSL options from it, and those replace the `ssl` object the client passed — `ca` included. Proven by running both forms against the same server:
+
+| Connection string | Result |
+|---|---|
+| with `?sslmode=require` | `self-signed certificate in certificate chain` — the CA was dropped |
+| no `sslmode` | `Hostname/IP does not match certificate's altnames` — the CA was used, the chain verified, and only the hostname differed because the test went through the public proxy |
+
+So **`DATABASE_URL` and `DATABASE_MIGRATION_URL` must carry no `sslmode` parameter.** SSL is turned on by `DATABASE_SSL=true`, and the certificate is trusted through `DATABASE_CA_CERT`. Adding `sslmode` back turns full verification into a boot loop.
+
+Migrations run from your machine and reach the database through the public TCP proxy, whose hostname is not in the certificate, so that one connection does need `?sslmode=no-verify` on its URL. It is a one-off admin connection, not the runtime posture.
+
 ### 3.4 Run the migrations — from your machine, once
 
 Migrations are deliberately **not** in the container start command. Every replica would race to migrate on each deploy, and one failure would crash-loop the service. A migration is an operator action against a database, not a side effect of a container booting.

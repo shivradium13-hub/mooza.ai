@@ -49,3 +49,8 @@ Thumbs.db
 *.p12
 *.pfx
 secrets/
+# Added by the Vercel CLI. `.env*` as it writes it would also match
+# .env.example, which is tracked on purpose, so the exception is explicit.
+.vercel
+.env*
+!.env.example
