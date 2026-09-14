@@ -5,8 +5,11 @@
   --color-surface: #ffffff;
   --color-muted: #6b7280;
   --color-line: #e5e7eb;
-  --color-accent: #4f46e5;
-  --color-accent-soft: #eef2ff;
+  /* The product accent IS the brand violet, so a button in the app and the
+     wordmark on the marketing site are visibly one colour rather than two
+     that nearly match. */
+  --color-accent: #6d28d9;
+  --color-accent-soft: #f3eeff;
   --color-danger: #b42318;
 
   /* Marketing surfaces. The application shell is light-only; the public site
@@ -18,6 +21,16 @@
   --color-night-muted: #98a1b3;
   --color-chalk: #f7f8fa;
   --color-violet: #7c5cff;
+
+  /* Brand palette for the auth screens and the hero. A single violet ramp, so
+     the gradient, the buttons and the focus rings are visibly the same colour
+     rather than three that happen to be close. */
+  --color-brand: #6d28d9;
+  --color-brand-bright: #8b5cf6;
+  --color-brand-deep: #4c1d95;
+  --color-abyss: #08080f;
+  --color-abyss-soft: #12121d;
+  --color-abyss-line: #23233a;
 
   --font-display:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -61,7 +74,7 @@ body {
  */
 
 .gradient-text {
-  background-image: linear-gradient(100deg, var(--color-accent), var(--color-violet) 60%, #22d3ee);
+  background-image: linear-gradient(95deg, var(--color-brand) 0%, var(--color-brand-bright) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -106,4 +119,49 @@ body {
   .animate-rise {
     animation: none;
   }
+}
+
+/*
+ * Auth-screen surfaces.
+ *
+ * Both are a wash of brand colour behind a card, and both are painted here
+ * rather than as a stack of inline utilities because each is several layered
+ * gradients — expressed inline they would be unreadable and repeated twice.
+ */
+
+.auth-bg-light {
+  background:
+    radial-gradient(1100px 700px at 12% -10%, #ede9fe 0%, transparent 55%),
+    radial-gradient(900px 600px at 88% 8%, #e0e7ff 0%, transparent 50%),
+    radial-gradient(1000px 800px at 50% 115%, #ddd6fe 0%, transparent 60%), #f7f7fb;
+}
+
+.auth-bg-dark {
+  background:
+    radial-gradient(900px 600px at 15% -5%, rgba(109, 40, 217, 0.32) 0%, transparent 55%),
+    radial-gradient(800px 600px at 85% 105%, rgba(139, 92, 246, 0.24) 0%, transparent 55%), #08080f;
+}
+
+/* The brand wordmark and any headline word that should carry the ramp. */
+.brand-text {
+  background-image: linear-gradient(95deg, var(--color-brand) 0%, var(--color-brand-bright) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Primary action. A gradient rather than a flat fill, to match the mark. */
+.btn-brand {
+  background-image: linear-gradient(95deg, var(--color-brand) 0%, var(--color-brand-bright) 100%);
+  color: #fff;
+  transition:
+    filter 0.15s ease,
+    transform 0.15s ease;
+}
+.btn-brand:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.btn-brand:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }

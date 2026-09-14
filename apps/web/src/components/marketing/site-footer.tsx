@@ -46,7 +46,9 @@ export function SiteFooter() {
           <div className="max-w-xs">
             <Link href="/" className="flex items-center gap-2.5" aria-label="MOOZA AI home">
               <Wordmark className="h-7 w-7" />
-              <span className="text-[15px] font-semibold tracking-tight">MOOZA AI</span>
+              <span className="text-[17px] font-semibold tracking-tight">
+                Mooza<span className="brand-text">.ai</span>
+              </span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">
               One workspace for your documents, your agents and your models — with the audit trail

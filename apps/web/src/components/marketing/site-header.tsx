@@ -33,7 +33,9 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-5 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5" aria-label="MOOZA AI home">
           <Wordmark className="h-7 w-7" />
-          <span className="text-[15px] font-semibold tracking-tight">MOOZA AI</span>
+          <span className="text-[17px] font-semibold tracking-tight">
+            Mooza<span className="brand-text">.ai</span>
+          </span>
         </Link>
 
         <nav aria-label="Main" className="ml-6 hidden items-center gap-1 md:flex">

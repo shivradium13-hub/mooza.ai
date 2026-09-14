@@ -5,7 +5,18 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api-shared';
 import { browserApi } from '@/lib/api-browser';
-import { Button, Card, ErrorNote, Field } from '@/components/ui';
+import {
+  AuthButton,
+  AuthCard,
+  AuthError,
+  AuthField,
+  AuthHeading,
+  AuthShell,
+  BrandLockup,
+} from '@/components/auth-ui';
+
+/** Mirrors the API's floor, so the obvious mistake is caught without a round trip. */
+const MIN_PASSWORD = 12;
 
 export default function SignupPage() {
   const router = useRouter();
@@ -15,16 +26,30 @@ export default function SignupPage() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setBusy(true);
 
     const form = new FormData(event.currentTarget);
+    const password = String(form.get('password') ?? '');
+    const confirmPassword = String(form.get('confirmPassword') ?? '');
+
+    // Checked here and never sent: the API takes one password, and a third
+    // copy of a secret on the wire buys nothing.
+    if (password !== confirmPassword) {
+      setError('The two passwords do not match.');
+      return;
+    }
+    if (password.length < MIN_PASSWORD) {
+      setError(`Password must be at least ${MIN_PASSWORD} characters.`);
+      return;
+    }
+
+    setBusy(true);
     try {
       await browserApi('/v1/auth/register', {
         method: 'POST',
         body: {
           name: String(form.get('name') ?? ''),
           email: String(form.get('email') ?? ''),
-          password: String(form.get('password') ?? ''),
+          password,
           organizationName: String(form.get('organizationName') ?? ''),
         },
       });
@@ -38,39 +63,75 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="w-full max-w-sm">
-        <div className="mb-6 text-center">
-          <h1 className="text-lg font-semibold tracking-tight">Create your workspace</h1>
-          <p className="mt-1 text-xs text-muted">You become the owner of a new organization.</p>
+    <AuthShell tone="dark" quote={<>&ldquo;Create. Explore. Grow.&rdquo; With Mooza.ai</>}>
+      <AuthCard tone="dark">
+        <BrandLockup tone="dark" />
+
+        <div className="mt-6">
+          <AuthHeading
+            tone="dark"
+            title="Create your account"
+            subtitle="Start a workspace and become its owner"
+          />
         </div>
 
-        <Card>
-          <form onSubmit={onSubmit} className="space-y-4 p-5">
-            <Field label="Your name" name="name" required />
-            <Field label="Work email" name="email" type="email" required />
-            <Field
-              label="Password"
-              name="password"
-              type="password"
-              required
-              hint="At least 12 characters."
-            />
-            <Field label="Organization name" name="organizationName" required />
-            <ErrorNote message={error} />
-            <Button type="submit" disabled={busy}>
-              {busy ? 'Creating…' : 'Create workspace'}
-            </Button>
-          </form>
-        </Card>
+        <form onSubmit={onSubmit} className="mt-8 space-y-5">
+          <AuthField
+            tone="dark"
+            label="Full name"
+            name="name"
+            placeholder="Your full name"
+            autoComplete="name"
+            required
+          />
+          <AuthField
+            tone="dark"
+            label="Email address"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            autoComplete="email"
+            required
+          />
+          <AuthField
+            tone="dark"
+            label="Workspace name"
+            name="organizationName"
+            placeholder="Your team or company"
+            autoComplete="organization"
+            required
+            hint="Everything you create lives inside this workspace."
+          />
+          <AuthField
+            tone="dark"
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="Create a password"
+            autoComplete="new-password"
+            required
+            hint={`At least ${MIN_PASSWORD} characters.`}
+          />
+          <AuthField
+            tone="dark"
+            label="Confirm password"
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            autoComplete="new-password"
+            required
+          />
+          <AuthError tone="dark" message={error} />
+          <AuthButton disabled={busy}>{busy ? 'Creating account…' : 'Create account'}</AuthButton>
+        </form>
 
-        <p className="mt-4 text-center text-xs text-muted">
+        <p className="mt-6 text-center text-sm text-white/55">
           Already have an account?{' '}
-          <Link href="/login" className="font-medium text-accent">
+          <Link href="/login" className="font-semibold text-brand-bright hover:underline">
             Sign in
           </Link>
         </p>
-      </div>
-    </main>
+      </AuthCard>
+    </AuthShell>
   );
 }

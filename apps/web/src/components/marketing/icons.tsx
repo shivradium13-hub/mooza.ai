@@ -163,8 +163,8 @@ export function Wordmark({ className = 'h-6 w-6' }: IconProps) {
     <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false" className={className}>
       <defs>
         <linearGradient id="mooza-mark" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#4f46e5" />
-          <stop offset="100%" stopColor="#7c5cff" />
+          <stop offset="0%" stopColor="#6d28d9" />
+          <stop offset="100%" stopColor="#8b5cf6" />
         </linearGradient>
       </defs>
       <rect width="32" height="32" rx="9" fill="url(#mooza-mark)" />
