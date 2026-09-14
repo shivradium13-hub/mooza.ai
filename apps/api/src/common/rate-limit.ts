@@ -66,6 +66,27 @@ export class InMemoryRateLimiter implements RateLimiter {
   }
 }
 
+/**
+ * A driver that never refuses anything.
+ *
+ * Selected only by `RATE_LIMIT_DISABLED=true`, and the API logs a warning at
+ * every boot while it is in force. It exists because a demo or an internal
+ * deployment sometimes wants the limits out of the way, and the alternative
+ * people reach for otherwise is editing the limits at each call site — which
+ * is the same weakening, spread across the code and easy to forget.
+ *
+ * WHAT IS GIVEN UP. Login is limited to blunt credential stuffing: an attacker
+ * with a list of leaked passwords can otherwise try them against a known
+ * address as fast as the network allows. Nothing else in the stack replaces
+ * that. Do not set this on a deployment with real accounts.
+ */
+@Injectable()
+export class DisabledRateLimiter implements RateLimiter {
+  async consume(_key: string, limit: number): Promise<RateLimitResult> {
+    return { allowed: true, remaining: limit, retryAfterSeconds: 0 };
+  }
+}
+
 export const RATE_LIMITER = Symbol('RATE_LIMITER');
 
 /**

@@ -22,7 +22,7 @@ const base64Key32 = z
     {
       message:
         'must be exactly 32 bytes, base64-encoded. Generate with: ' +
-        'node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'base64\'))"',
+        "node -e \"console.log(require('crypto').randomBytes(32).toString('base64'))\"",
     },
   );
 
@@ -40,9 +40,7 @@ const postgresUrl = z
     message: 'must be a postgres:// or postgresql:// connection string',
   });
 
-const booleanish = z
-  .enum(['true', 'false', '1', '0'])
-  .transform((v) => v === 'true' || v === '1');
+const booleanish = z.enum(['true', 'false', '1', '0']).transform((v) => v === 'true' || v === '1');
 
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -74,6 +72,21 @@ export const envSchema = z.object({
   DATABASE_CA_CERT: z.string().optional(),
 
   REDIS_URL: z.string().optional(),
+
+  /*
+   * Turns every rate limit off, login included.
+   *
+   * Defaults to false, so nothing changes for anyone who does not ask. It is
+   * here because the alternative is worse: somebody who finds the login limit
+   * inconvenient edits the numbers at each call site, which weakens the same
+   * control but scatters it through the code where the next reader cannot see
+   * that it was a decision.
+   *
+   * The API logs a warning naming what is off on every boot while it is set,
+   * because a disabled limiter looks exactly like a working one until someone
+   * attacks it.
+   */
+  RATE_LIMIT_DISABLED: booleanish.default('false'),
 
   ENCRYPTION_KEY: base64Key32,
   AUTH_SECRET: base64Secret,
