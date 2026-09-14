@@ -16,7 +16,7 @@
  * transaction, exactly like application code.
  */
 import { createHash } from 'node:crypto';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config as loadDotenv } from 'dotenv';
 import pg from 'pg';
@@ -59,7 +59,7 @@ interface SeededOrg {
   projectId: string;
 }
 
-async function seedRolesAndPermissions(client: pg.Client): Promise<void> {
+export async function seedRolesAndPermissions(client: pg.Client): Promise<void> {
   for (const role of ALL_ROLES) {
     await client.query(
       `INSERT INTO roles (key, name, rank, is_system)
@@ -88,13 +88,21 @@ async function seedRolesAndPermissions(client: pg.Client): Promise<void> {
       );
     }
   }
-  console.warn(`  roles: ${ALL_ROLES.length}, permissions: ${Object.keys(PERMISSION_DESCRIPTIONS).length}`);
+  console.warn(
+    `  roles: ${ALL_ROLES.length}, permissions: ${Object.keys(PERMISSION_DESCRIPTIONS).length}`,
+  );
 }
 
 async function seedOrganization(
   client: pg.Client,
   rootKey: Buffer,
-  params: { slug: string; name: string; ownerEmail: string; ownerName: string; projectSlug: string },
+  params: {
+    slug: string;
+    name: string;
+    ownerEmail: string;
+    ownerName: string;
+    projectSlug: string;
+  },
 ): Promise<SeededOrg> {
   // The owner user is global, so it is created outside the tenant transaction.
   const passwordHash = await hashPassword('CorrectHorseBattery1!');
@@ -121,10 +129,9 @@ async function seedOrganization(
    * (0002_user_scope.sql). No new privilege, no RLS exception.
    */
   const existing = await bindUser(client, ownerUserId, async () => {
-    const r = await client.query<{ id: string }>(
-      'SELECT id FROM organizations WHERE slug = $1',
-      [params.slug],
-    );
+    const r = await client.query<{ id: string }>('SELECT id FROM organizations WHERE slug = $1', [
+      params.slug,
+    ]);
     return r.rows;
   });
 
@@ -201,7 +208,7 @@ async function seedOrganization(
  * would quietly undo every negotiated arrangement, which is the sort of thing
  * discovered from a customer's invoice.
  */
-async function seedPlans(client: pg.Client): Promise<void> {
+export async function seedPlans(client: pg.Client): Promise<void> {
   for (const plan of DEFAULT_PLANS) {
     const inserted = await client.query<{ id: string }>(
       `INSERT INTO plans (key, name, description, price_monthly_cents, currency, sort_order)
@@ -279,7 +286,11 @@ async function bindUser<T>(client: pg.Client, userId: string, fn: () => Promise<
   }
 }
 
-async function bindOrg<T>(client: pg.Client, organizationId: string, fn: () => Promise<T>): Promise<T> {
+async function bindOrg<T>(
+  client: pg.Client,
+  organizationId: string,
+  fn: () => Promise<T>,
+): Promise<T> {
   await client.query('BEGIN');
   try {
     await client.query("SELECT set_config('app.current_org_id', $1, true)", [organizationId]);
@@ -340,12 +351,23 @@ async function main(): Promise<void> {
   }
 }
 
-if (process.env.NODE_ENV === 'production') {
-  console.error('Refusing to seed a production database.');
-  process.exit(1);
-}
+/*
+ * Only run when this file is the program, not when seed-reference.ts imports
+ * the two reference-data functions out of it. Without the guard, importing
+ * them would also create the demo tenants — and hit the production refusal
+ * below, which is exactly what a production deployment needs to get past.
+ */
+const isEntryPoint = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
-main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(1);
-});
+if (isEntryPoint) {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Refusing to seed a production database.');
+    console.error('Reference data alone (roles, permissions, plans) is `pnpm db:seed:reference`.');
+    process.exit(1);
+  }
+
+  main().catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  });
+}

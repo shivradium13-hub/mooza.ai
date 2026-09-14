@@ -573,7 +573,8 @@ the runbook:
 | `pnpm test:security` | Security suites against real PostgreSQL |
 | `pnpm test:drill` | Backup/restore, readiness and reconciliation drills |
 | `pnpm db:migrate` | Apply SQL migrations |
-| `pnpm db:seed` | Seed roles, permissions and tenant fixtures |
+| `pnpm db:seed` | Seed roles, permissions and tenant fixtures (development only) |
+| `pnpm db:seed:reference` | Seed roles, permissions and plans only — safe in production |
 | `pnpm db:backup` | Dump the database (refuses a role that would produce an empty one) |
 | `pnpm db:restore` | Restore, preserving ownership, policies and grants |
 | `pnpm billing:reconcile` | Compare cached balances against the credit ledger |

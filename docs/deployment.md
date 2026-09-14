@@ -293,11 +293,26 @@ Migrations are deliberately **not** in the container start command. Every replic
 DATABASE_MIGRATION_URL="postgresql://moka_migrator:<MIGRATOR_PASSWORD>@<DB_HOST>/moka_ai?sslmode=require" pnpm db:migrate
 ```
 
-Then seed the roles, permissions and plan catalogue:
+Then seed the roles, permissions and plan catalogue. **On a production database this is `db:seed:reference`, not `db:seed`:**
 
 ```bash
-DATABASE_URL="postgresql://moka_app:<APP_PASSWORD>@<DB_HOST>/moka_ai?sslmode=require" DATABASE_MIGRATION_URL="postgresql://moka_migrator:<MIGRATOR_PASSWORD>@<DB_HOST>/moka_ai?sslmode=require" pnpm db:seed
+DATABASE_MIGRATION_URL="postgresql://moka_migrator:<MIGRATOR_PASSWORD>@<DB_HOST>/moka_ai?sslmode=no-verify" pnpm db:seed:reference
 ```
+
+`db:seed` does two unrelated jobs: it mirrors that reference data, and it creates two demo organizations whose owners share a password printed in this repository. It refuses to run when `NODE_ENV=production` for the second reason — but the first is not optional, because `organization_members.role_key` is a foreign key into `roles`.
+
+Skip it entirely and the deployment looks healthy and cannot create its first account. Registration fails with
+
+```
+insert or update on table "organization_members" violates foreign key
+constraint "organization_members_role_key_fkey"
+```
+
+which reads as a bug in sign-up rather than as an empty `roles` table.
+
+`db:seed:reference` runs only the half that is not a fixture, and is safe in production.
+
+Note the `sslmode=no-verify`: this connection reaches the database through its public TCP proxy, whose hostname is not in the certificate. See §3.3b — the runtime connection is the one that must verify fully.
 
 Run migrations **before** the first deploy finishes, or at least before anyone uses the service. The API starts fine against an unmigrated database — readiness reports `schema: "ok"` because a database with no tables has no unprotected ones — so an empty database will not stop a deploy going live.
 
@@ -421,7 +436,7 @@ pnpm verify && pnpm test:security
 
 The order is not arbitrary: the web build inlines the API's URL, and the API will not start without a database.
 
-1. **Database** (§4). Provision Postgres, run `infra/db/bootstrap.sql` as a superuser to create `moka_app` and `moka_migrator`, then `pnpm db:migrate` and `pnpm db:seed` from your machine.
+1. **Database** (§4). Provision Postgres, run `infra/db/bootstrap.sql` as a superuser to create `moka_app` and `moka_migrator`, then `pnpm db:migrate` and `pnpm db:seed:reference` from your machine — the plain `db:seed` is development fixtures and refuses to run against production (§3.4).
 2. **API** (§3). Railway, repository root, add the `/data` volume *before* the first deploy, paste the variables from §3.3. Confirm `GET /health/ready` returns `"schema":"ok"`.
 3. **Web** (§2). Vercel, Root Directory `apps/web`, `NEXT_PUBLIC_API_URL` set to the Railway URL **before** the first build.
 4. **CORS.** Put the real Vercel domain in the API's `CORS_ORIGINS` and redeploy. Until this is done every logged-in request fails in the browser.

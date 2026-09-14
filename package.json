@@ -2,7 +2,7 @@
   "name": "moka-ai",
   "version": "0.1.0",
   "private": true,
-  "description": "MOKA AI \u2014 multi-tenant AI workspace and AI workforce platform.",
+  "description": "MOKA AI — multi-tenant AI workspace and AI workforce platform.",
   "packageManager": "pnpm@12.3.4",
   "engines": {
     "node": ">=20.11.0"
@@ -24,7 +24,8 @@
     "db:restore": "node infra/db/restore.mjs",
     "billing:reconcile": "node infra/billing/reconcile.mjs",
     "bench": "node infra/bench/benchmark.mjs",
-    "deploy:env": "node infra/deploy/railway-env.mjs"
+    "deploy:env": "node infra/deploy/railway-env.mjs",
+    "db:seed:reference": "pnpm --filter @moka/db run seed:reference"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

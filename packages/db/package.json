@@ -23,7 +23,8 @@
     "test": "vitest run --passWithNoTests",
     "generate": "drizzle-kit generate",
     "migrate": "tsx scripts/migrate.ts",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "seed:reference": "tsx scripts/seed-reference.ts"
   },
   "dependencies": {
     "@moka/billing": "workspace:*",
