@@ -53,11 +53,11 @@ export default async function SourcePage({ params }: { params: Promise<{ id: str
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/knowledge" className="text-xs text-[--color-muted] hover:underline">
+        <Link href="/knowledge" className="text-xs text-muted hover:underline">
           ← Knowledge
         </Link>
         <h1 className="mt-1 text-xl font-semibold tracking-tight">{sourceData.source.name}</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           {sourceData.source.type} · {sourceData.source.documentCount} document
           {sourceData.source.documentCount === 1 ? '' : 's'} · {sourceData.source.chunkCount} chunk
           {sourceData.source.chunkCount === 1 ? '' : 's'}

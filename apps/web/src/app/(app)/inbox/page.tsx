@@ -35,7 +35,7 @@ export default async function InboxPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Conversations</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           Visitors are shown by a per-conversation label, not a name. We record where a conversation
           was opened from and nothing else about who opened it.
         </p>

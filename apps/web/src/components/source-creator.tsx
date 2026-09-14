@@ -37,9 +37,7 @@ export function SourceCreator({ types }: { types: string[] }) {
   }
 
   if (!open) {
-    return (
-      <Button onClick={() => setOpen(true)}>New source</Button>
-    );
+    return <Button onClick={() => setOpen(true)}>New source</Button>;
   }
 
   return (
@@ -49,11 +47,11 @@ export function SourceCreator({ types }: { types: string[] }) {
         <form onSubmit={create} className="space-y-4 p-5">
           <Field label="Name" name="name" required placeholder="Company Handbook" />
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-[--color-muted]">Type</span>
+            <span className="mb-1 block text-xs font-medium text-muted">Type</span>
             <select
               name="type"
               defaultValue="UPLOAD"
-              className="h-9 w-full rounded-lg border border-[--color-line] bg-white px-2 text-sm outline-none focus:border-[--color-accent]"
+              className="h-9 w-full rounded-lg border border-line bg-white px-2 text-sm outline-none focus:border-accent"
             >
               {(types.length > 0 ? types : ['UPLOAD']).map((type) => (
                 <option key={type} value={type}>

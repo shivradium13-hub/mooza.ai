@@ -20,7 +20,7 @@ export default async function ProjectsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Projects</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           Every project below belongs to the active organization. Row-Level Security makes another
           organization&apos;s projects unreachable, not merely hidden.
         </p>

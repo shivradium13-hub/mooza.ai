@@ -24,7 +24,7 @@ export default async function ChatbotsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Chatbots</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           A chatbot answers members of the public on your own website. It can only quote knowledge
           you explicitly publish to it, and it can never take an action on anyone&apos;s behalf.
         </p>
@@ -40,7 +40,7 @@ export default async function ChatbotsPage() {
             description="Create one, publish a knowledge source to it, then deploy it to a site."
           />
         ) : (
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {chatbots.map((bot) => (
               <li key={bot.id}>
                 <Link
@@ -49,7 +49,7 @@ export default async function ChatbotsPage() {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{bot.name}</p>
-                    <p className="truncate text-xs text-[--color-muted]">
+                    <p className="truncate text-xs text-muted">
                       {bot.sourceIds.length === 0
                         ? 'No knowledge published — it cannot answer anything yet'
                         : `${bot.sourceIds.length} source${bot.sourceIds.length === 1 ? '' : 's'} published`}

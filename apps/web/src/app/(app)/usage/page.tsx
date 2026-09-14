@@ -59,7 +59,7 @@ export default async function UsagePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Usage and plan</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           Every limit here comes from your plan, not from the code. Usage is counted when it is
           checked, so these numbers are current rather than cached.
         </p>
@@ -82,7 +82,7 @@ function UsagePanel({ usage }: { usage: UsageSummary }) {
           title="AI usage this period"
           description={`Since ${new Date(usage.period.start).toLocaleDateString()}`}
         />
-        <div className="grid grid-cols-2 gap-px bg-[--color-line] sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-4">
           <Stat label="Calls" value={totals.calls.toLocaleString()} />
           <Stat label="Input tokens" value={totals.inputTokens.toLocaleString()} />
           <Stat label="Output tokens" value={totals.outputTokens.toLocaleString()} />
@@ -95,9 +95,10 @@ function UsagePanel({ usage }: { usage: UsageSummary }) {
           number somebody will budget against.
         */}
         {totals.unpricedCalls > 0 ? (
-          <div className="border-t border-[--color-line] bg-amber-50 px-5 py-3 text-xs text-amber-900">
+          <div className="border-t border-line bg-amber-50 px-5 py-3 text-xs text-amber-900">
             <p className="font-medium">
-              {totals.unpricedCalls} call{totals.unpricedCalls === 1 ? '' : 's'} could not be priced.
+              {totals.unpricedCalls} call{totals.unpricedCalls === 1 ? '' : 's'} could not be
+              priced.
             </p>
             <p className="mt-0.5">
               The cost above excludes them, so it understates the real spend. Pricing for those
@@ -107,7 +108,7 @@ function UsagePanel({ usage }: { usage: UsageSummary }) {
         ) : null}
 
         {totals.failedCalls > 0 ? (
-          <div className="border-t border-[--color-line] px-5 py-2.5 text-xs text-[--color-muted]">
+          <div className="border-t border-line px-5 py-2.5 text-xs text-muted">
             {totals.failedCalls} call{totals.failedCalls === 1 ? '' : 's'} failed. A failed call
             still consumed provider quota and latency, so it is counted here.
           </div>
@@ -121,7 +122,7 @@ function UsagePanel({ usage }: { usage: UsageSummary }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="border-b border-[--color-line] text-left text-[--color-muted]">
+              <thead className="border-b border-line text-left text-muted">
                 <tr>
                   <th className="px-5 py-2 font-medium">Model</th>
                   <th className="px-3 py-2 font-medium">Calls</th>
@@ -130,7 +131,7 @@ function UsagePanel({ usage }: { usage: UsageSummary }) {
                   <th className="px-5 py-2 text-right font-medium">Cost</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[--color-line]">
+              <tbody className="divide-y divide-line">
                 {usage.byModel.map((row) => (
                   <tr key={`${row.providerId}:${row.modelId}`}>
                     <td className="px-5 py-2 font-mono">{row.modelId}</td>
@@ -139,7 +140,7 @@ function UsagePanel({ usage }: { usage: UsageSummary }) {
                     <td className="px-3 py-2">{row.outputTokens.toLocaleString()}</td>
                     <td className="px-5 py-2 text-right">
                       {row.unpricedCalls > 0 && row.calls === row.unpricedCalls ? (
-                        <span className="text-[--color-muted]">not priced</span>
+                        <span className="text-muted">not priced</span>
                       ) : (
                         row.knownCostDisplay
                       )}
@@ -158,7 +159,7 @@ function UsagePanel({ usage }: { usage: UsageSummary }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white px-5 py-4">
-      <p className="text-xs text-[--color-muted]">{label}</p>
+      <p className="text-xs text-muted">{label}</p>
       <p className="mt-0.5 text-lg font-semibold tracking-tight">{value}</p>
     </div>
   );

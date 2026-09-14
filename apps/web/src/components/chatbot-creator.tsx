@@ -67,19 +67,19 @@ export function ChatbotCreator() {
         />
 
         <label className="block">
-          <span className="mb-1 block text-xs font-medium text-[--color-muted]">Instructions</span>
+          <span className="mb-1 block text-xs font-medium text-muted">Instructions</span>
           <textarea
             name="instructions"
             rows={4}
             placeholder="You answer questions about our shipping and returns policy."
-            className="w-full rounded-lg border border-[--color-line] bg-white px-3 py-2 text-sm outline-none focus:border-[--color-accent]"
+            className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent"
           />
           {/*
             Worth saying plainly and not in a tooltip. A determined visitor can
             get a model to recite its own system prompt, and no instruction
             reliably prevents that — so this field is effectively public.
           */}
-          <span className="mt-1 block text-xs text-[--color-muted]">
+          <span className="mt-1 block text-xs text-muted">
             Treat this as public. A visitor can sometimes persuade a chatbot to repeat its own
             instructions, so do not put anything confidential here.
           </span>

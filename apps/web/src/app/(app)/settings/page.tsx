@@ -27,7 +27,7 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader title="Organization" />
-        <dl className="divide-y divide-[--color-line] text-sm">
+        <dl className="divide-y divide-line text-sm">
           <Row label="Name" value={org?.organization.name ?? '—'} />
           <Row label="Slug" value={org?.organization.slug ?? '—'} />
           <Row label="Organization ID" value={org?.organization.id ?? '—'} mono />
@@ -45,12 +45,12 @@ export default async function SettingsPage() {
             description="Either no activity has been recorded, or your role lacks audit:read."
           />
         ) : (
-          <ul className="divide-y divide-[--color-line] text-sm">
+          <ul className="divide-y divide-line text-sm">
             {audit.entries.map((entry) => (
               <li key={entry.id} className="flex items-center gap-4 px-5 py-2.5">
                 <span className="font-mono text-xs">{entry.action}</span>
-                <span className="text-xs text-[--color-muted]">{entry.resourceType}</span>
-                <span className="ml-auto text-xs text-[--color-muted]">
+                <span className="text-xs text-muted">{entry.resourceType}</span>
+                <span className="ml-auto text-xs text-muted">
                   {new Date(entry.createdAt).toLocaleString()}
                 </span>
               </li>
@@ -65,7 +65,7 @@ export default async function SettingsPage() {
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex items-center gap-4 px-5 py-3">
-      <dt className="text-xs text-[--color-muted]">{label}</dt>
+      <dt className="text-xs text-muted">{label}</dt>
       <dd className={`ml-auto ${mono ? 'font-mono text-xs' : 'text-sm'}`}>{value}</dd>
     </div>
   );

@@ -38,7 +38,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[--color-line] bg-white">
+      <header className="border-b border-line bg-white">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4">
           <Link href="/dashboard" className="text-sm font-semibold tracking-tight">
             MOOZA AI
@@ -49,7 +49,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-lg px-2.5 py-1.5 text-sm text-[--color-muted] transition hover:bg-gray-50 hover:text-[--color-ink]"
+                className="rounded-lg px-2.5 py-1.5 text-sm text-muted transition hover:bg-gray-50 hover:text-ink"
               >
                 {item.label}
               </Link>

@@ -127,19 +127,19 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
         {/* Start from a template                                            */}
         {/* ---------------------------------------------------------------- */}
         <div>
-          <p className="mb-2 text-xs font-medium text-[--color-muted]">Start from</p>
+          <p className="mb-2 text-xs font-medium text-muted">Start from</p>
           <div className="grid gap-2 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => chooseTemplate(null)}
               className={`rounded-lg border p-3 text-left transition ${
                 templateId === null
-                  ? 'border-[--color-accent] bg-[--color-accent-soft]'
-                  : 'border-[--color-line] hover:bg-gray-50'
+                  ? 'border-accent bg-accent-soft'
+                  : 'border-line hover:bg-gray-50'
               }`}
             >
               <span className="block text-sm font-medium">Blank</span>
-              <span className="block text-xs text-[--color-muted]">
+              <span className="block text-xs text-muted">
                 Choose the tools and instructions yourself.
               </span>
             </button>
@@ -151,12 +151,12 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
                 onClick={() => chooseTemplate(item)}
                 className={`rounded-lg border p-3 text-left transition ${
                   templateId === item.id
-                    ? 'border-[--color-accent] bg-[--color-accent-soft]'
-                    : 'border-[--color-line] hover:bg-gray-50'
+                    ? 'border-accent bg-accent-soft'
+                    : 'border-line hover:bg-gray-50'
                 }`}
               >
                 <span className="block text-sm font-medium">{item.name}</span>
-                <span className="block text-xs text-[--color-muted]">{item.summary}</span>
+                <span className="block text-xs text-muted">{item.summary}</span>
               </button>
             ))}
           </div>
@@ -182,7 +182,7 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
         <Field label="Description" name="description" placeholder="What this agent is for" />
 
         <label className="block">
-          <span className="mb-1 block text-xs font-medium text-[--color-muted]">Instructions</span>
+          <span className="mb-1 block text-xs font-medium text-muted">Instructions</span>
           <textarea
             name="instructions"
             rows={5}
@@ -193,7 +193,7 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
                 ? 'Leave blank to use the template’s instructions, or write your own.'
                 : 'You are a helpful assistant that…'
             }
-            className="w-full rounded-lg border border-[--color-line] bg-white px-3 py-2 text-sm outline-none focus:border-[--color-accent]"
+            className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm outline-none focus:border-accent"
           />
         </label>
 
@@ -201,9 +201,7 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
         {/* Ceiling                                                          */}
         {/* ---------------------------------------------------------------- */}
         <div>
-          <p className="mb-2 text-xs font-medium text-[--color-muted]">
-            How far this agent may go
-          </p>
+          <p className="mb-2 text-xs font-medium text-muted">How far this agent may go</p>
           <div className="space-y-1.5">
             {LEVELS.map((option) => (
               <label key={option.value} className="flex gap-2.5">
@@ -217,7 +215,7 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
                 />
                 <span className="min-w-0">
                   <span className="block text-sm">{option.label}</span>
-                  <span className="block text-xs text-[--color-muted]">{option.hint}</span>
+                  <span className="block text-xs text-muted">{option.hint}</span>
                 </span>
               </label>
             ))}
@@ -228,10 +226,8 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
         {/* Tools                                                            */}
         {/* ---------------------------------------------------------------- */}
         <div>
-          <p className="mb-2 text-xs font-medium text-[--color-muted]">
-            Tools ({selected.length} selected)
-          </p>
-          <ul className="divide-y divide-[--color-line] rounded-lg border border-[--color-line]">
+          <p className="mb-2 text-xs font-medium text-muted">Tools ({selected.length} selected)</p>
+          <ul className="divide-y divide-line rounded-lg border border-line">
             {tools.map((tool) => {
               const on = selected.includes(tool.name);
               return (
@@ -249,7 +245,7 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
                   />
                   <label htmlFor={`tool-${tool.name}`} className="min-w-0 flex-1">
                     <span className="block font-mono text-xs font-medium">{tool.name}</span>
-                    <span className="block text-xs text-[--color-muted]">{tool.description}</span>
+                    <span className="block text-xs text-muted">{tool.description}</span>
                   </label>
                   <div className="flex shrink-0 flex-col items-end gap-1">
                     <RiskPill risk={tool.risk} />
@@ -261,7 +257,7 @@ export function AgentBuilder({ templates, tools }: { templates: Template[]; tool
               );
             })}
           </ul>
-          <p className="mt-1.5 text-xs text-[--color-muted]">
+          <p className="mt-1.5 text-xs text-muted">
             Risk is shown here for you. It is never described to the model — telling it which tools
             are privileged only helps an injected instruction pick a target.
           </p>

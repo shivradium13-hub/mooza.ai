@@ -96,12 +96,12 @@ export function ProjectManager({ initialProjects }: { initialProjects: Project[]
 
       {initialProjects.length > 0 ? (
         <Card>
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {initialProjects.map((project) => (
               <li key={project.id} className="flex items-center gap-4 px-5 py-3.5">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{project.name}</p>
-                  <p className="truncate text-xs text-[--color-muted]">
+                  <p className="truncate text-xs text-muted">
                     {project.slug}
                     {project.description ? ` · ${project.description}` : ''}
                   </p>

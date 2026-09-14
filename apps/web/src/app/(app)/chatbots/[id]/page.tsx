@@ -47,7 +47,7 @@ export default async function ChatbotPage({ params }: { params: Promise<{ id: st
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/chatbots" className="text-xs text-[--color-muted] hover:underline">
+        <Link href="/chatbots" className="text-xs text-muted hover:underline">
           ← Chatbots
         </Link>
         <h1 className="mt-1 text-xl font-semibold tracking-tight">{botData.chatbot.name}</h1>

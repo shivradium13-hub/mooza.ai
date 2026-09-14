@@ -38,7 +38,7 @@ export default async function KnowledgePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Knowledge</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           Documents ingested here are chunked and indexed for retrieval, scoped to this
           organization.
         </p>
@@ -64,7 +64,7 @@ export default async function KnowledgePage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-sm font-semibold">Sources</h2>
-          <p className="mt-0.5 text-xs text-[--color-muted]">
+          <p className="mt-0.5 text-xs text-muted">
             {capabilities
               ? `Accepts ${capabilities.supportedExtensions.join(', ')} up to ${Math.floor(
                   capabilities.maxDocumentBytes / 1024 / 1024,
@@ -84,7 +84,7 @@ export default async function KnowledgePage() {
         </Card>
       ) : (
         <Card>
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {sources.map((source) => (
               <li key={source.id}>
                 <Link
@@ -93,7 +93,7 @@ export default async function KnowledgePage() {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{source.name}</p>
-                    <p className="truncate text-xs text-[--color-muted]">
+                    <p className="truncate text-xs text-muted">
                       {source.documentCount} document{source.documentCount === 1 ? '' : 's'} ·{' '}
                       {source.chunkCount} chunk{source.chunkCount === 1 ? '' : 's'}
                       {source.errorMessage ? ` · ${source.errorMessage}` : ''}
@@ -115,7 +115,7 @@ export default async function KnowledgePage() {
           title="Not yet implemented"
           description="Listed explicitly rather than stubbed."
         />
-        <ul className="divide-y divide-[--color-line] text-sm">
+        <ul className="divide-y divide-line text-sm">
           {[
             ['Semantic (vector) search and reranking', 'needs pgvector'],
             ['Website crawling with SSRF protection', 'Phase 2b'],
@@ -123,7 +123,7 @@ export default async function KnowledgePage() {
             ['OCR for scanned documents', 'Phase 2b'],
           ].map(([label, note]) => (
             <li key={label} className="flex items-center justify-between px-5 py-3">
-              <span className="text-[--color-muted]">{label}</span>
+              <span className="text-muted">{label}</span>
               <Badge>{note}</Badge>
             </li>
           ))}

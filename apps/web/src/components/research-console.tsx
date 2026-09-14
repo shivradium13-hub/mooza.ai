@@ -120,16 +120,16 @@ export function ResearchConsole({ capabilities }: { capabilities: Capabilities }
             placeholder="What does their pricing page say about seat limits?"
           />
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-[--color-muted]">
+            <span className="mb-1 block text-xs font-medium text-muted">
               Pages to read {keywordSearch ? '(optional)' : '(required)'}
             </span>
             <textarea
               name="urls"
               rows={3}
               placeholder="https://example.com/pricing&#10;https://docs.example.com/limits"
-              className="w-full rounded-lg border border-[--color-line] bg-white px-3 py-2 font-mono text-xs outline-none focus:border-[--color-accent]"
+              className="w-full rounded-lg border border-line bg-white px-3 py-2 font-mono text-xs outline-none focus:border-accent"
             />
-            <span className="mt-1 block text-xs text-[--color-muted]">
+            <span className="mt-1 block text-xs text-muted">
               {keywordSearch
                 ? 'Give URLs to read exactly those pages, or leave blank to search.'
                 : 'One per line. Sites that disallow automated access in robots.txt are skipped.'}
@@ -166,12 +166,12 @@ function ResultView({ result }: { result: RunResult }) {
         </div>
 
         {result.citations.length > 0 ? (
-          <div className="border-t border-[--color-line] px-5 py-4">
-            <p className="mb-2 text-xs font-medium text-[--color-muted]">Sources</p>
+          <div className="border-t border-line px-5 py-4">
+            <p className="mb-2 text-xs font-medium text-muted">Sources</p>
             <ol className="space-y-1.5">
               {result.citations.map((citation) => (
                 <li key={citation.id} className="text-xs">
-                  <span className="mr-1.5 font-mono text-[--color-muted]">[{citation.id}]</span>
+                  <span className="mr-1.5 font-mono text-muted">[{citation.id}]</span>
                   {/*
                     rel="noopener noreferrer" and no target-blank trust: these
                     URLs came from pages we fetched, which is not the same as
@@ -181,11 +181,11 @@ function ResultView({ result }: { result: RunResult }) {
                     href={citation.url}
                     rel="noopener noreferrer nofollow"
                     target="_blank"
-                    className="text-[--color-accent] hover:underline"
+                    className="text-accent hover:underline"
                   >
                     {citation.title ?? citation.url}
                   </a>
-                  <span className="ml-1.5 text-[--color-muted]">
+                  <span className="ml-1.5 text-muted">
                     · read {new Date(citation.fetchedAt).toLocaleString()}
                   </span>
                   {citation.quoteVerified === false ? (
@@ -232,11 +232,11 @@ function ResultView({ result }: { result: RunResult }) {
             title="Pages considered"
             description="Two sources out of nine is a different answer from two out of two."
           />
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {result.attempts.map((attempt, index) => (
               <li key={`${attempt.url}-${index}`} className="flex items-start gap-3 px-5 py-2.5">
                 <span className="min-w-0 flex-1 truncate font-mono text-xs">{attempt.url}</span>
-                <span className="shrink-0 text-xs text-[--color-muted]">
+                <span className="shrink-0 text-xs text-muted">
                   {attempt.outcome === 'collected' ? 'read' : (attempt.detail ?? attempt.outcome)}
                 </span>
               </li>

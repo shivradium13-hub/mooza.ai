@@ -81,7 +81,7 @@ export default async function AgentsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Agents</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           An agent can only ever do what <em>you</em> could do by hand. Every tool call is checked
           against your own role, not the agent&apos;s configuration.
         </p>
@@ -100,12 +100,12 @@ export default async function AgentsPage() {
         {tools.length === 0 ? (
           <EmptyState title="No tools" description="No tools are registered." />
         ) : (
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {tools.map((tool) => (
               <li key={tool.name} className="flex items-center gap-3 px-5 py-3">
                 <div className="min-w-0">
                   <p className="truncate font-mono text-xs font-medium">{tool.name}</p>
-                  <p className="truncate text-xs text-[--color-muted]">{tool.description}</p>
+                  <p className="truncate text-xs text-muted">{tool.description}</p>
                 </div>
                 <div className="ml-auto flex shrink-0 items-center gap-2">
                   <RiskPill risk={tool.risk} />
@@ -125,24 +125,24 @@ export default async function AgentsPage() {
             description="Start from a template above, or build one from scratch."
           />
         ) : (
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {agents.map((agent) => (
               <li key={agent.id} className="px-5 py-3.5">
                 <div className="flex items-center gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{agent.name}</p>
-                    <p className="truncate text-xs text-[--color-muted]">
+                    <p className="truncate text-xs text-muted">
                       {agent.tools.length} tool{agent.tools.length === 1 ? '' : 's'} ·{' '}
                       {agent.maxSteps} step limit
                     </p>
                   </div>
                   <div className="ml-auto flex shrink-0 items-center gap-2">
                     <RiskPill risk={agent.permissionLevel} />
-                    <span className="text-xs text-[--color-muted]">{agent.status}</span>
+                    <span className="text-xs text-muted">{agent.status}</span>
                   </div>
                 </div>
                 {agent.tools.length > 0 ? (
-                  <p className="mt-1.5 font-mono text-[11px] text-[--color-muted]">
+                  <p className="mt-1.5 font-mono text-[11px] text-muted">
                     {agent.tools.join(', ')}
                   </p>
                 ) : null}
@@ -160,18 +160,18 @@ export default async function AgentsPage() {
         {runs.length === 0 ? (
           <EmptyState title="No runs yet" description="Run an agent to see its history here." />
         ) : (
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {runs.slice(0, 10).map((run) => (
               <li key={run.id} className="px-5 py-3">
                 <div className="flex items-center gap-3">
                   <p className="min-w-0 truncate text-sm">{run.input}</p>
-                  <span className="ml-auto shrink-0 text-xs text-[--color-muted]">
+                  <span className="ml-auto shrink-0 text-xs text-muted">
                     {run.status}
                     {run.errorCode ? ` · ${run.errorCode}` : ''} · {run.stepsUsed} steps
                   </span>
                 </div>
                 {run.output ? (
-                  <p className="mt-1 truncate text-xs text-[--color-muted]">{run.output}</p>
+                  <p className="mt-1 truncate text-xs text-muted">{run.output}</p>
                 ) : null}
               </li>
             ))}

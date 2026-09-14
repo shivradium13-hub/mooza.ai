@@ -45,10 +45,12 @@ export function KnowledgeSearch() {
     }
 
     try {
-      setResult(await browserApi<SearchResponse>('/v1/knowledge/search', {
-        method: 'POST',
-        body: { query, limit: 8 },
-      }));
+      setResult(
+        await browserApi<SearchResponse>('/v1/knowledge/search', {
+          method: 'POST',
+          body: { query, limit: 8 },
+        }),
+      );
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Search failed.');
     } finally {
@@ -63,7 +65,7 @@ export function KnowledgeSearch() {
         <input
           name="query"
           placeholder="e.g. how long do I have to request a refund"
-          className="h-9 flex-1 rounded-lg border border-[--color-line] bg-white px-3 text-sm outline-none focus:border-[--color-accent]"
+          className="h-9 flex-1 rounded-lg border border-line bg-white px-3 text-sm outline-none focus:border-accent"
         />
         <Button type="submit" disabled={busy}>
           {busy ? 'Searching…' : 'Search'}
@@ -75,26 +77,23 @@ export function KnowledgeSearch() {
 
         {result ? (
           <>
-            <p className="mb-3 text-xs text-[--color-muted]">
+            <p className="mb-3 text-xs text-muted">
               {result.chunks.length} result{result.chunks.length === 1 ? '' : 's'} in{' '}
               {result.tookMs} ms · mode <span className="font-mono">{result.mode}</span>
               {result.denseAvailable ? null : ' · lexical matching only'}
             </p>
 
             {result.chunks.length === 0 ? (
-              <p className="text-xs text-[--color-muted]">
+              <p className="text-xs text-muted">
                 Nothing matched. Try different words — without semantic search, spelling and
                 phrasing matter.
               </p>
             ) : (
               <ul className="space-y-3">
                 {result.chunks.map((chunk) => (
-                  <li
-                    key={chunk.chunkId}
-                    className="rounded-lg border border-[--color-line] bg-gray-50 p-3"
-                  >
-                    <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-[--color-muted]">
-                      <span className="font-medium text-[--color-ink]">{chunk.documentTitle}</span>
+                  <li key={chunk.chunkId} className="rounded-lg border border-line bg-gray-50 p-3">
+                    <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
+                      <span className="font-medium text-ink">{chunk.documentTitle}</span>
                       {chunk.headingPath.length > 0 ? (
                         <span>· {chunk.headingPath.join(' › ')}</span>
                       ) : null}

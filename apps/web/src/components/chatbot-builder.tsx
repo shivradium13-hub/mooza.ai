@@ -85,7 +85,7 @@ export function ChatbotBuilder({
           />
         ) : (
           <>
-            <ul className="divide-y divide-[--color-line]">
+            <ul className="divide-y divide-line">
               {sources.map((source) => {
                 const on = selected.includes(source.id);
                 return (
@@ -103,9 +103,7 @@ export function ChatbotBuilder({
                     />
                     <label htmlFor={`source-${source.id}`} className="min-w-0 flex-1">
                       <span className="block truncate text-sm">{source.name}</span>
-                      <span className="block truncate text-xs text-[--color-muted]">
-                        {source.type}
-                      </span>
+                      <span className="block truncate text-xs text-muted">{source.type}</span>
                     </label>
                     {on ? (
                       <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800">
@@ -116,7 +114,7 @@ export function ChatbotBuilder({
                 );
               })}
             </ul>
-            <div className="border-t border-[--color-line] px-5 py-3">
+            <div className="border-t border-line px-5 py-3">
               <Button
                 disabled={busy}
                 onClick={() =>
@@ -177,12 +175,12 @@ export function ChatbotBuilder({
             }
           />
 
-          <div className="flex items-center gap-3 border-t border-[--color-line] pt-4">
+          <div className="flex items-center gap-3 border-t border-line pt-4">
             <div className="min-w-0">
               <p className="text-sm font-medium">
                 {chatbot.status === 'active' ? 'Live' : 'Not live'}
               </p>
-              <p className="text-xs text-[--color-muted]">
+              <p className="text-xs text-muted">
                 {chatbot.status === 'active'
                   ? 'Answering visitors on every active deployment.'
                   : canGoLive
@@ -215,15 +213,10 @@ export function ChatbotBuilder({
       {/* ---------------------------------------------------------------- */}
       {/* Deployments                                                       */}
       {/* ---------------------------------------------------------------- */}
-      <DeploymentPanel
-        chatbotId={chatbot.id}
-        deployments={deployments}
-        busy={busy}
-        onCall={call}
-      />
+      <DeploymentPanel chatbotId={chatbot.id} deployments={deployments} busy={busy} onCall={call} />
 
       {liveDeployments.length > 0 && chatbot.status === 'active' ? null : (
-        <p className="text-xs text-[--color-muted]">
+        <p className="text-xs text-muted">
           This chatbot is not reachable by anyone yet. It needs to be live and to have at least one
           deployment naming the sites it may appear on.
         </p>
@@ -277,13 +270,13 @@ function DeploymentPanel({
           description="Create a deployment to get an embed snippet."
         />
       ) : (
-        <ul className="divide-y divide-[--color-line]">
+        <ul className="divide-y divide-line">
           {deployments.map((deployment) => (
             <li key={deployment.id} className="px-5 py-4">
               <div className="flex items-center gap-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{deployment.name}</p>
-                  <p className="truncate text-xs text-[--color-muted]">
+                  <p className="truncate text-xs text-muted">
                     {deployment.allowedOrigins.join(', ') || 'No sites — embeddable nowhere'}
                   </p>
                 </div>
@@ -305,7 +298,7 @@ function DeploymentPanel({
                       Revoke
                     </Button>
                   ) : (
-                    <span className="text-xs text-[--color-muted]">revoked</span>
+                    <span className="text-xs text-muted">revoked</span>
                   )}
                 </div>
               </div>
@@ -318,7 +311,7 @@ function DeploymentPanel({
         </ul>
       )}
 
-      <div className="border-t border-[--color-line] px-5 py-3">
+      <div className="border-t border-line px-5 py-3">
         {open ? (
           <form onSubmit={create} className="space-y-3">
             <Field label="Name" name="name" required placeholder="Marketing site" />
@@ -362,10 +355,10 @@ function EmbedSnippet({ publicKey }: { publicKey: string }) {
   return (
     <div className="mt-3">
       <div className="flex items-center gap-2">
-        <p className="text-xs font-medium text-[--color-muted]">Paste before &lt;/body&gt;</p>
+        <p className="text-xs font-medium text-muted">Paste before &lt;/body&gt;</p>
         <button
           type="button"
-          className="ml-auto text-xs text-[--color-accent] hover:underline"
+          className="ml-auto text-xs text-accent hover:underline"
           onClick={() => {
             void navigator.clipboard.writeText(snippet).then(() => {
               setCopied(true);
@@ -379,7 +372,7 @@ function EmbedSnippet({ publicKey }: { publicKey: string }) {
       <pre className="mt-1 overflow-x-auto rounded-lg bg-gray-50 p-3 text-[11px] leading-relaxed">
         <code>{snippet}</code>
       </pre>
-      <p className="mt-1 text-xs text-[--color-muted]">
+      <p className="mt-1 text-xs text-muted">
         This key is public — it appears in your page source. It lets a visitor start a conversation
         and nothing else.
       </p>
@@ -411,7 +404,7 @@ function Toggle({
       />
       <span className="min-w-0">
         <span className="block text-sm font-medium">{label}</span>
-        <span className="block text-xs text-[--color-muted]">{hint}</span>
+        <span className="block text-xs text-muted">{hint}</span>
       </span>
     </label>
   );

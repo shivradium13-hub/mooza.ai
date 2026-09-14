@@ -60,7 +60,7 @@ export function OrganizationSwitcher({
         disabled={busy || organizations.length === 0}
         value={activeOrganizationId ?? ''}
         onChange={(e) => void switchTo(e.target.value)}
-        className="h-8 rounded-lg border border-[--color-line] bg-white px-2 text-xs outline-none focus:border-[--color-accent] disabled:opacity-50"
+        className="h-8 rounded-lg border border-line bg-white px-2 text-xs outline-none focus:border-accent disabled:opacity-50"
       >
         {organizations.length === 0 ? <option value="">No organizations</option> : null}
         {organizations.map((org) => (
@@ -74,7 +74,7 @@ export function OrganizationSwitcher({
         type="button"
         onClick={() => void signOut()}
         disabled={busy}
-        className="h-8 rounded-lg border border-[--color-line] bg-white px-2.5 text-xs font-medium transition hover:bg-gray-50 disabled:opacity-50"
+        className="h-8 rounded-lg border border-line bg-white px-2.5 text-xs font-medium transition hover:bg-gray-50 disabled:opacity-50"
       >
         Sign out
       </button>

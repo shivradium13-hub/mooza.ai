@@ -42,9 +42,7 @@ export default function SignupPage() {
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
           <h1 className="text-lg font-semibold tracking-tight">Create your workspace</h1>
-          <p className="mt-1 text-xs text-[--color-muted]">
-            You become the owner of a new organization.
-          </p>
+          <p className="mt-1 text-xs text-muted">You become the owner of a new organization.</p>
         </div>
 
         <Card>
@@ -66,9 +64,9 @@ export default function SignupPage() {
           </form>
         </Card>
 
-        <p className="mt-4 text-center text-xs text-[--color-muted]">
+        <p className="mt-4 text-center text-xs text-muted">
           Already have an account?{' '}
-          <Link href="/login" className="font-medium text-[--color-accent]">
+          <Link href="/login" className="font-medium text-accent">
             Sign in
           </Link>
         </p>

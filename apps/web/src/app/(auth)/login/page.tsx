@@ -43,7 +43,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
           <h1 className="text-lg font-semibold tracking-tight">MOOZA AI</h1>
-          <p className="mt-1 text-xs text-[--color-muted]">Sign in to your workspace</p>
+          <p className="mt-1 text-xs text-muted">Sign in to your workspace</p>
         </div>
 
         <Card>
@@ -57,9 +57,9 @@ export default function LoginPage() {
           </form>
         </Card>
 
-        <p className="mt-4 text-center text-xs text-[--color-muted]">
+        <p className="mt-4 text-center text-xs text-muted">
           No account?{' '}
-          <Link href="/signup" className="font-medium text-[--color-accent]">
+          <Link href="/signup" className="font-medium text-accent">
             Create one
           </Link>
         </p>

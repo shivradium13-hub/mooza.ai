@@ -128,11 +128,11 @@ export function CredentialManager({
           />
           <form onSubmit={create} className="grid gap-4 p-5 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-xs font-medium text-[--color-muted]">Provider</span>
+              <span className="mb-1 block text-xs font-medium text-muted">Provider</span>
               <select
                 name="providerId"
                 defaultValue="anthropic"
-                className="h-9 w-full rounded-lg border border-[--color-line] bg-white px-2 text-sm outline-none focus:border-[--color-accent]"
+                className="h-9 w-full rounded-lg border border-line bg-white px-2 text-sm outline-none focus:border-accent"
               >
                 {PROVIDERS.map((provider) => (
                   <option key={provider.id} value={provider.id}>
@@ -146,7 +146,7 @@ export function CredentialManager({
 
             <div className="sm:col-span-2">
               <label className="block">
-                <span className="mb-1 block text-xs font-medium text-[--color-muted]">API key</span>
+                <span className="mb-1 block text-xs font-medium text-muted">API key</span>
                 <input
                   name="apiKey"
                   type="password"
@@ -154,9 +154,9 @@ export function CredentialManager({
                   autoComplete="off"
                   spellCheck={false}
                   placeholder="sk-…"
-                  className="h-9 w-full rounded-lg border border-[--color-line] bg-white px-3 font-mono text-sm outline-none focus:border-[--color-accent]"
+                  className="h-9 w-full rounded-lg border border-line bg-white px-3 font-mono text-sm outline-none focus:border-accent"
                 />
-                <span className="mt-1 block text-xs text-[--color-muted]">
+                <span className="mt-1 block text-xs text-muted">
                   Stored encrypted. Only the last four characters remain visible.
                 </span>
               </label>
@@ -182,7 +182,7 @@ export function CredentialManager({
 
       {credentials.length > 0 ? (
         <Card>
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {credentials.map((credential) => {
               const result = tests[credential.id];
               const revoked = credential.status === 'revoked';
@@ -193,11 +193,11 @@ export function CredentialManager({
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">
                         {credential.name}{' '}
-                        <span className="font-mono text-xs text-[--color-muted]">
+                        <span className="font-mono text-xs text-muted">
                           ····{credential.lastFour}
                         </span>
                       </p>
-                      <p className="truncate text-xs text-[--color-muted]">
+                      <p className="truncate text-xs text-muted">
                         {credential.providerId}
                         {credential.baseUrl ? ` · ${credential.baseUrl}` : ''}
                         {credential.lastUsedAt
@@ -218,9 +218,7 @@ export function CredentialManager({
                   {result ? (
                     <p
                       className={`mt-2 rounded-lg px-3 py-2 text-xs ${
-                        result.ok
-                          ? 'bg-emerald-50 text-emerald-900'
-                          : 'bg-amber-50 text-amber-900'
+                        result.ok ? 'bg-emerald-50 text-emerald-900' : 'bg-amber-50 text-amber-900'
                       }`}
                     >
                       {result.ok
@@ -231,7 +229,11 @@ export function CredentialManager({
 
                   {!revoked ? (
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Button variant="secondary" disabled={busy} onClick={() => void test(credential.id)}>
+                      <Button
+                        variant="secondary"
+                        disabled={busy}
+                        onClick={() => void test(credential.id)}
+                      >
                         Test connection
                       </Button>
                       <Button
@@ -254,7 +256,7 @@ export function CredentialManager({
                       </Button>
                     </div>
                   ) : (
-                    <p className="mt-2 text-xs text-[--color-muted]">
+                    <p className="mt-2 text-xs text-muted">
                       Revoked
                       {credential.revokedAt
                         ? ` on ${new Date(credential.revokedAt).toLocaleString()}`
@@ -279,7 +281,9 @@ function StatusPill({ status }: { status: string }) {
       : status === 'revoked'
         ? 'bg-red-50 text-red-700'
         : 'bg-gray-100 text-gray-600';
-  return <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${tone}`}>{status}</span>;
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${tone}`}>{status}</span>
+  );
 }
 
 /** Surface field-level detail where the API provided it. */

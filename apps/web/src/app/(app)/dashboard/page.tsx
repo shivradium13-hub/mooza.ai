@@ -28,7 +28,7 @@ export default async function DashboardPage() {
         <h1 className="text-xl font-semibold tracking-tight">
           {org?.organization.name ?? 'Dashboard'}
         </h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           Phase 1 foundation — authentication, organizations and multi-tenancy.
         </p>
       </div>
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
           title="What is not built yet"
           description="Listed explicitly rather than stubbed, so nothing here pretends to work."
         />
-        <ul className="divide-y divide-[--color-line] text-sm">
+        <ul className="divide-y divide-line text-sm">
           {[
             ['Knowledge engine, RAG, pgvector', 'Phase 2'],
             ['AI gateway, model router, streaming', 'Phase 3'],
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
             ['Website chatbot and widget', 'Phase 6'],
           ].map(([label, phase]) => (
             <li key={label} className="flex items-center justify-between px-5 py-3">
-              <span className="text-[--color-muted]">{label}</span>
+              <span className="text-muted">{label}</span>
               <Badge>{phase}</Badge>
             </li>
           ))}
@@ -75,10 +75,10 @@ function Stat({
   hint?: string;
 }) {
   const body = (
-    <Card className="px-5 py-4 transition hover:border-[--color-accent]">
-      <p className="text-xs text-[--color-muted]">{label}</p>
+    <Card className="px-5 py-4 transition hover:border-accent">
+      <p className="text-xs text-muted">{label}</p>
       <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
-      {hint ? <p className="mt-0.5 text-[11px] text-[--color-muted]">{hint}</p> : null}
+      {hint ? <p className="mt-0.5 text-[11px] text-muted">{hint}</p> : null}
     </Card>
   );
   return href ? <Link href={href}>{body}</Link> : body;

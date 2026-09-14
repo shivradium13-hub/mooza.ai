@@ -92,7 +92,7 @@ export function ConversationInbox({
       {conversations.length === 0 ? (
         <EmptyState title="Nobody is waiting" description="Handoff requests appear here." />
       ) : (
-        <ul className="divide-y divide-[--color-line]">
+        <ul className="divide-y divide-line">
           {conversations.map((conversation) => (
             <li key={conversation.id} className="px-5 py-3">
               <button
@@ -102,13 +102,13 @@ export function ConversationInbox({
               >
                 <div className="min-w-0">
                   <p className="truncate font-mono text-xs font-medium">{conversation.visitor}</p>
-                  <p className="truncate text-xs text-[--color-muted]">
+                  <p className="truncate text-xs text-muted">
                     {conversation.origin ?? 'unknown site'} · {conversation.messageCount} message
                     {conversation.messageCount === 1 ? '' : 's'} ·{' '}
                     {new Date(conversation.lastActivityAt).toLocaleString()}
                   </p>
                 </div>
-                <span className="ml-auto shrink-0 text-xs text-[--color-muted]">
+                <span className="ml-auto shrink-0 text-xs text-muted">
                   {conversation.status.replace('_', ' ')}
                 </span>
               </button>
@@ -118,20 +118,16 @@ export function ConversationInbox({
                   <div className="max-h-80 space-y-2 overflow-y-auto rounded-lg bg-gray-50 p-3">
                     {transcript.map((message) => (
                       <div key={message.id}>
-                        <p className="text-[11px] font-medium text-[--color-muted]">
-                          {label(message.role)}
-                        </p>
+                        <p className="text-[11px] font-medium text-muted">{label(message.role)}</p>
                         {/*
                           React escapes this. The transcript contains text a
                           stranger typed and text a model wrote about documents
                           we did not author, so it is rendered as text and never
                           as markup — the same rule the widget follows.
                         */}
-                        <p className="whitespace-pre-wrap break-words text-xs">
-                          {message.content}
-                        </p>
+                        <p className="whitespace-pre-wrap break-words text-xs">{message.content}</p>
                         {message.citations?.length ? (
-                          <p className="mt-0.5 text-[11px] text-[--color-muted]">
+                          <p className="mt-0.5 text-[11px] text-muted">
                             Based on: {message.citations.map((c) => c.documentTitle).join(', ')}
                           </p>
                         ) : null}
@@ -139,17 +135,20 @@ export function ConversationInbox({
                     ))}
                   </div>
 
-                  <form onSubmit={(event) => void reply(event, conversation.id)} className="flex gap-2">
+                  <form
+                    onSubmit={(event) => void reply(event, conversation.id)}
+                    className="flex gap-2"
+                  >
                     <input
                       name="message"
                       placeholder="Reply as a person"
-                      className="h-9 flex-1 rounded-lg border border-[--color-line] bg-white px-3 text-sm outline-none focus:border-[--color-accent]"
+                      className="h-9 flex-1 rounded-lg border border-line bg-white px-3 text-sm outline-none focus:border-accent"
                     />
                     <Button type="submit" disabled={busy}>
                       Send
                     </Button>
                   </form>
-                  <p className="text-[11px] text-[--color-muted]">
+                  <p className="text-[11px] text-muted">
                     Your reply is labelled as coming from a person, so the transcript never blurs
                     which sentences you wrote and which the assistant did.
                   </p>

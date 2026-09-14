@@ -21,7 +21,7 @@ export default async function MembersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Members</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           Roles are enforced server-side. What is rendered here is presentation, never permission.
         </p>
       </div>
@@ -34,16 +34,16 @@ export default async function MembersPage() {
             description="Your role may not include permission to read the member list."
           />
         ) : (
-          <ul className="divide-y divide-[--color-line]">
+          <ul className="divide-y divide-line">
             {members.map((member) => (
               <li key={member.id} className="flex items-center gap-4 px-5 py-3.5">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{member.name}</p>
-                  <p className="truncate text-xs text-[--color-muted]">{member.email}</p>
+                  <p className="truncate text-xs text-muted">{member.email}</p>
                 </div>
                 <div className="ml-auto flex shrink-0 items-center gap-2">
                   <Badge>{member.role}</Badge>
-                  <span className="text-xs text-[--color-muted]">{member.status}</span>
+                  <span className="text-xs text-muted">{member.status}</span>
                 </div>
               </li>
             ))}
@@ -51,7 +51,7 @@ export default async function MembersPage() {
         )}
       </Card>
 
-      <p className="text-xs text-[--color-muted]">
+      <p className="text-xs text-muted">
         Invitations and role editing are wired in the API (member:invite, member:update_role) and
         surfaced in the UI in Phase 2.
       </p>

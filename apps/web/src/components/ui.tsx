@@ -10,7 +10,7 @@ import type { ReactNode } from 'react';
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-[--color-line] bg-white shadow-sm ${className}`}>
+    <div className={`rounded-xl border border-line bg-white shadow-sm ${className}`}>
       {children}
     </div>
   );
@@ -18,9 +18,9 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 
 export function CardHeader({ title, description }: { title: string; description?: string }) {
   return (
-    <div className="border-b border-[--color-line] px-5 py-4">
+    <div className="border-b border-line px-5 py-4">
       <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
-      {description ? <p className="mt-0.5 text-xs text-[--color-muted]">{description}</p> : null}
+      {description ? <p className="mt-0.5 text-xs text-muted">{description}</p> : null}
     </div>
   );
 }
@@ -39,9 +39,9 @@ export function Button({
   onClick?: () => void;
 }) {
   const styles: Record<string, string> = {
-    primary: 'bg-[--color-accent] text-white hover:opacity-90',
-    secondary: 'border border-[--color-line] bg-white hover:bg-gray-50',
-    danger: 'border border-[--color-danger] text-[--color-danger] hover:bg-red-50',
+    primary: 'bg-accent text-white hover:opacity-90',
+    secondary: 'border border-line bg-white hover:bg-gray-50',
+    danger: 'border border-danger text-danger hover:bg-red-50',
   };
   return (
     <button
@@ -74,7 +74,7 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-[--color-muted]">{label}</span>
+      <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
       <input
         name={name}
         type={type}
@@ -82,9 +82,9 @@ export function Field({
         defaultValue={defaultValue}
         placeholder={placeholder}
         autoComplete={type === 'password' ? 'current-password' : undefined}
-        className="h-9 w-full rounded-lg border border-[--color-line] bg-white px-3 text-sm outline-none focus:border-[--color-accent]"
+        className="h-9 w-full rounded-lg border border-line bg-white px-3 text-sm outline-none focus:border-accent"
       />
-      {hint ? <span className="mt-1 block text-xs text-[--color-muted]">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-xs text-muted">{hint}</span> : null}
     </label>
   );
 }
@@ -92,7 +92,7 @@ export function Field({
 export function ErrorNote({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs text-[--color-danger]">
+    <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs text-danger">
       {message}
     </p>
   );
@@ -102,14 +102,14 @@ export function EmptyState({ title, description }: { title: string; description:
   return (
     <div className="px-5 py-12 text-center">
       <p className="text-sm font-medium">{title}</p>
-      <p className="mx-auto mt-1 max-w-sm text-xs text-[--color-muted]">{description}</p>
+      <p className="mx-auto mt-1 max-w-sm text-xs text-muted">{description}</p>
     </div>
   );
 }
 
 export function Badge({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-full bg-[--color-accent-soft] px-2 py-0.5 text-[11px] font-medium text-[--color-accent]">
+    <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent">
       {children}
     </span>
   );

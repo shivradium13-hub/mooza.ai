@@ -75,9 +75,7 @@ export function DocumentUploader({
       router.refresh();
     } catch (err) {
       setError(
-        err instanceof ApiError
-          ? describeApiError(err)
-          : 'Upload failed. Please try again.',
+        err instanceof ApiError ? describeApiError(err) : 'Upload failed. Please try again.',
       );
     } finally {
       setBusy(false);
@@ -116,22 +114,18 @@ export function DocumentUploader({
       <CardHeader
         title="Add knowledge"
         description={
-          supportedExtensions.length > 0
-            ? `Accepts ${supportedExtensions.join(', ')}.`
-            : undefined
+          supportedExtensions.length > 0 ? `Accepts ${supportedExtensions.join(', ')}.` : undefined
         }
       />
 
-      <div className="flex gap-1 border-b border-[--color-line] px-5 pt-3">
+      <div className="flex gap-1 border-b border-line px-5 pt-3">
         {(['file', 'text'] as const).map((value) => (
           <button
             key={value}
             type="button"
             onClick={() => setTab(value)}
             className={`rounded-t-lg px-3 py-1.5 text-xs font-medium transition ${
-              tab === value
-                ? 'border-b-2 border-[--color-accent] text-[--color-ink]'
-                : 'text-[--color-muted] hover:text-[--color-ink]'
+              tab === value ? 'border-b-2 border-accent text-ink' : 'text-muted hover:text-ink'
             }`}
           >
             {value === 'file' ? 'Upload file' : 'Paste text'}
@@ -142,22 +136,20 @@ export function DocumentUploader({
       <div className="space-y-4 p-5">
         {tab === 'file' ? (
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-[--color-muted]">
-              Choose a file
-            </span>
+            <span className="mb-1 block text-xs font-medium text-muted">Choose a file</span>
             <input
               type="file"
               disabled={busy}
               onChange={(e) => void uploadFile(e)}
               accept={supportedExtensions.join(',')}
-              className="block w-full text-xs file:mr-3 file:h-9 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[--color-accent] file:px-3 file:text-xs file:font-medium file:text-white disabled:opacity-50"
+              className="block w-full text-xs file:mr-3 file:h-9 file:cursor-pointer file:rounded-lg file:border-0 file:bg-accent file:px-3 file:text-xs file:font-medium file:text-white disabled:opacity-50"
             />
           </label>
         ) : (
           <form onSubmit={submitText} className="space-y-4">
             <Field label="Title" name="title" required placeholder="Refund Policy" />
             <label className="block">
-              <span className="mb-1 block text-xs font-medium text-[--color-muted]">
+              <span className="mb-1 block text-xs font-medium text-muted">
                 Content (Markdown headings become chunk breadcrumbs)
               </span>
               <textarea
@@ -165,7 +157,7 @@ export function DocumentUploader({
                 required
                 rows={8}
                 placeholder={'# Refund Policy\n\n## Eligibility\n\nCustomers may request…'}
-                className="w-full rounded-lg border border-[--color-line] bg-white p-3 font-mono text-xs outline-none focus:border-[--color-accent]"
+                className="w-full rounded-lg border border-line bg-white p-3 font-mono text-xs outline-none focus:border-accent"
               />
             </label>
             <Button type="submit" disabled={busy}>
@@ -175,7 +167,7 @@ export function DocumentUploader({
         )}
 
         {busy ? (
-          <p className="text-xs text-[--color-muted]">
+          <p className="text-xs text-muted">
             Parsing, chunking and indexing… this runs inline, so large files take a moment.
           </p>
         ) : null}

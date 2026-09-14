@@ -37,9 +37,7 @@ export function ApprovalInbox({ approvals }: { approvals: Approval[] }) {
       await browserApi(`/v1/agents/approvals/${id}`, { method: 'POST', body: { decision } });
       router.refresh();
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : 'The decision could not be recorded.',
-      );
+      setError(err instanceof ApiError ? err.message : 'The decision could not be recorded.');
     } finally {
       setBusy(null);
     }
@@ -52,7 +50,7 @@ export function ApprovalInbox({ approvals }: { approvals: Approval[] }) {
           title="Approvals"
           description="Consequential actions pause here until a person authorises them."
         />
-        <p className="px-5 py-4 text-xs text-[--color-muted]">Nothing is waiting for approval.</p>
+        <p className="px-5 py-4 text-xs text-muted">Nothing is waiting for approval.</p>
       </Card>
     );
   }
@@ -67,19 +65,19 @@ export function ApprovalInbox({ approvals }: { approvals: Approval[] }) {
         <ErrorNote message={error} />
       </div>
 
-      <ul className="divide-y divide-[--color-line]">
+      <ul className="divide-y divide-line">
         {approvals.map((approval) => {
           const expired = new Date(approval.expiresAt).getTime() < Date.now();
 
           return (
             <li key={approval.id} className="px-5 py-4">
               <p className="text-sm font-medium">{approval.summary}</p>
-              <p className="mt-0.5 font-mono text-[11px] text-[--color-muted]">
+              <p className="mt-0.5 font-mono text-[11px] text-muted">
                 {approval.toolName} · requested {new Date(approval.createdAt).toLocaleString()}
               </p>
 
               {expired ? (
-                <p className="mt-2 text-xs text-[--color-muted]">
+                <p className="mt-2 text-xs text-muted">
                   This request has expired and can no longer be approved. A pending approval is a
                   held privilege, so it does not last indefinitely.
                 </p>

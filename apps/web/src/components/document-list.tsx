@@ -94,16 +94,18 @@ export function DocumentList({ documents }: { documents: DocumentSummary[] }) {
         <ErrorNote message={error} />
       </div>
 
-      <ul className="divide-y divide-[--color-line]">
+      <ul className="divide-y divide-line">
         {documents.map((document) => (
           <li key={document.id}>
             <div className="flex items-center gap-4 px-5 py-3.5">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{document.title}</p>
-                <p className="truncate text-xs text-[--color-muted]">
+                <p className="truncate text-xs text-muted">
                   {formatBytes(document.byteSize)} · {document.chunkCount} chunk
                   {document.chunkCount === 1 ? '' : 's'}
-                  {document.pageCount ? ` · ${document.pageCount} page${document.pageCount === 1 ? '' : 's'}` : ''}
+                  {document.pageCount
+                    ? ` · ${document.pageCount} page${document.pageCount === 1 ? '' : 's'}`
+                    : ''}
                   {' · '}
                   {document.status}
                 </p>
@@ -116,7 +118,11 @@ export function DocumentList({ documents }: { documents: DocumentSummary[] }) {
                 ) : null}
               </div>
               <div className="ml-auto flex shrink-0 gap-2">
-                <Button variant="secondary" disabled={busy} onClick={() => void toggle(document.id)}>
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => void toggle(document.id)}
+                >
                   {expanded === document.id ? 'Hide chunks' : 'View chunks'}
                 </Button>
                 <Button variant="danger" disabled={busy} onClick={() => void remove(document.id)}>
@@ -126,16 +132,13 @@ export function DocumentList({ documents }: { documents: DocumentSummary[] }) {
             </div>
 
             {expanded === document.id ? (
-              <div className="space-y-2 border-t border-[--color-line] bg-gray-50 px-5 py-4">
+              <div className="space-y-2 border-t border-line bg-gray-50 px-5 py-4">
                 {chunks.length === 0 ? (
-                  <p className="text-xs text-[--color-muted]">No chunks stored.</p>
+                  <p className="text-xs text-muted">No chunks stored.</p>
                 ) : (
                   chunks.map((chunk) => (
-                    <div
-                      key={chunk.id}
-                      className="rounded-lg border border-[--color-line] bg-white p-3"
-                    >
-                      <div className="mb-1.5 flex flex-wrap items-center gap-x-2 text-[11px] text-[--color-muted]">
+                    <div key={chunk.id} className="rounded-lg border border-line bg-white p-3">
+                      <div className="mb-1.5 flex flex-wrap items-center gap-x-2 text-[11px] text-muted">
                         <span className="font-mono">#{chunk.chunkIndex}</span>
                         {chunk.headingPath.length > 0 ? (
                           <span>{chunk.headingPath.join(' › ')}</span>

@@ -36,7 +36,7 @@ export default async function CredentialsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Mooza Credentials</h1>
-        <p className="mt-1 text-xs text-[--color-muted]">
+        <p className="mt-1 text-xs text-muted">
           Provider API keys for this organization. Keys are encrypted with a key unique to your
           organization and are never shown again after you save them.
         </p>
@@ -46,9 +46,9 @@ export default async function CredentialsPage() {
         Stated plainly rather than buried in docs. Someone pasting a production
         API key deserves to know exactly what happens to it.
       */}
-      <div className="rounded-lg border border-[--color-line] bg-[--color-accent-soft] px-4 py-3 text-xs">
-        <p className="font-medium text-[--color-ink]">How your keys are stored</p>
-        <ul className="mt-1.5 list-inside list-disc space-y-0.5 text-[--color-muted]">
+      <div className="rounded-lg border border-line bg-accent-soft px-4 py-3 text-xs">
+        <p className="font-medium text-ink">How your keys are stored</p>
+        <ul className="mt-1.5 list-inside list-disc space-y-0.5 text-muted">
           <li>Encrypted with AES-256-GCM under a data key unique to this organization.</li>
           <li>
             Cryptographically bound to this organization — a copied database row will not decrypt

@@ -71,7 +71,7 @@ export function PlanPanel({ billing }: { billing: BillingSummary | null }) {
           title="No subscription"
           description="This organization has no plan, so nothing new can be created."
         />
-        <div className="px-5 py-4 text-xs text-[--color-muted]">
+        <div className="px-5 py-4 text-xs text-muted">
           Existing data is unaffected. An administrator can set a plan, or the catalogue may not
           have been seeded on this deployment.
         </div>
@@ -121,10 +121,10 @@ export function PlanPanel({ billing }: { billing: BillingSummary | null }) {
 
           <div className="flex items-center gap-3">
             <div>
-              <p className="text-xs text-[--color-muted]">AI credit remaining</p>
+              <p className="text-xs text-muted">AI credit remaining</p>
               <p
                 className={`text-lg font-semibold tracking-tight ${
-                  (billing.credit.balanceMicroUsd ?? 0) <= 0 ? 'text-[--color-danger]' : ''
+                  (billing.credit.balanceMicroUsd ?? 0) <= 0 ? 'text-danger' : ''
                 }`}
               >
                 {billing.credit.display}
@@ -142,7 +142,7 @@ export function PlanPanel({ billing }: { billing: BillingSummary | null }) {
             believes allowances renew automatically will find out from an
             outage, not from a doc.
           */}
-          <p className="text-xs text-[--color-muted]">
+          <p className="text-xs text-muted">
             Allowances are issued on demand, not on a schedule — there is no job queue on this
             deployment. Issuing twice in one period does nothing.
           </p>
@@ -162,13 +162,13 @@ export function PlanPanel({ billing }: { billing: BillingSummary | null }) {
           title="What your plan includes"
           description="Counted now, not cached. These are the numbers enforcement actually uses."
         />
-        <ul className="divide-y divide-[--color-line]">
+        <ul className="divide-y divide-line">
           {billing.features.map((feature) => (
             <li key={feature.feature} className="flex items-center gap-3 px-5 py-2.5">
               <div className="min-w-0">
                 <p className="truncate text-sm">{feature.label}</p>
                 {feature.allowedValues ? (
-                  <p className="truncate font-mono text-[11px] text-[--color-muted]">
+                  <p className="truncate font-mono text-[11px] text-muted">
                     {feature.allowedValues.join(', ')}
                   </p>
                 ) : null}
@@ -186,13 +186,13 @@ export function PlanPanel({ billing }: { billing: BillingSummary | null }) {
 
 function FeatureValue({ feature }: { feature: Feature }) {
   if (!feature.included) {
-    return <span className="text-[--color-muted]">Not on this plan</span>;
+    return <span className="text-muted">Not on this plan</span>;
   }
   if (feature.allowedValues) {
-    return <span className="text-[--color-muted]">restricted</span>;
+    return <span className="text-muted">restricted</span>;
   }
   if (feature.limit === null) {
-    return <span className="text-[--color-muted]">Unlimited</span>;
+    return <span className="text-muted">Unlimited</span>;
   }
 
   const atLimit = feature.current >= feature.limit;
@@ -203,7 +203,7 @@ function FeatureValue({ feature }: { feature: Feature }) {
         ? `$${(feature.limit / 1_000_000).toFixed(2)} per period`
         : `${feature.current.toLocaleString()} of ${feature.limit.toLocaleString()}`;
 
-  return <span className={atLimit ? 'font-medium text-[--color-danger]' : ''}>{display}</span>;
+  return <span className={atLimit ? 'font-medium text-danger' : ''}>{display}</span>;
 }
 
 function formatBytes(bytes: number): string {
