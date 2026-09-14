@@ -32,10 +32,46 @@ if (leaky.length > 0) {
   );
 }
 
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * SAME-ORIGIN API PROXY
+ *
+ * Set `API_ORIGIN` and requests to `/api/*` are forwarded to the API, so the
+ * browser only ever talks to this app's own origin.
+ *
+ * WHY THAT MATTERS, AND WHAT BREAKS WITHOUT IT. The session cookie is issued by
+ * the API without a `Domain`, so it is host-only. When the two are deployed on
+ * hosts with no shared parent — `*.vercel.app` and `*.up.railway.app` — the
+ * browser holds that cookie for the API's host alone. It sends it to the API
+ * quite happily, so signing in appears to work, and the Next.js server never
+ * receives it, because the request arriving here carries no such cookie. Every
+ * server-rendered page then concludes the visitor is signed out: login returns
+ * 201, the app navigates to the dashboard, and the dashboard redirects
+ * straight back to the sign-in form with nothing logged anywhere to say why.
+ *
+ * Proxying puts the `Set-Cookie` on this origin, which is the only thing that
+ * makes it readable by a server component.
+ *
+ * This is the fallback, not the ideal. Two subdomains of one domain — say
+ * `app.example.com` and `api.example.com` with `COOKIE_DOMAIN=.example.com` —
+ * fix the same problem without routing every API call through this server.
+ * Leave `API_ORIGIN` unset for that arrangement, and in local development,
+ * where both sides already share `localhost`.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+const apiOrigin = process.env.API_ORIGIN?.replace(/\/+$/, '');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  ...(apiOrigin
+    ? {
+        async rewrites() {
+          return [{ source: '/api/:path*', destination: `${apiOrigin}/:path*` }];
+        },
+      }
+    : {}),
   // Workspace packages ship TypeScript-aware dual builds; Next compiles them
   // in-process rather than requiring a separate watch build during dev.
   transpilePackages: ['@moka/core'],

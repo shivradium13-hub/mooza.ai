@@ -13,6 +13,29 @@
  */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+/**
+ * Where the SERVER reaches the API, when that differs from where the browser
+ * does.
+ *
+ * It differs whenever the two are deployed on hosts with no shared parent
+ * domain — `*.vercel.app` talking to `*.up.railway.app`, say. There the session
+ * cookie is host-only on the API's domain: the browser sends it to the API
+ * quite happily, and the Next.js server never sees it at all, because the
+ * request reaching Vercel carries no such cookie. Every server-rendered page
+ * then decides the visitor is signed out. Login succeeds, the app navigates to
+ * the dashboard, and the dashboard bounces straight back to the sign-in form.
+ *
+ * The fix is to give the browser a SAME-ORIGIN path — `NEXT_PUBLIC_API_URL=/api`
+ * — which `next.config.mjs` rewrites onward. The cookie is then set on the app's
+ * own origin, so server components can read it. The server cannot use that
+ * relative path (it has no origin to resolve it against), so it keeps the
+ * absolute one, which is what this is.
+ *
+ * Unset, both sides use the same value and nothing changes: that is the local
+ * development case, where `http://localhost:4000` works from either side.
+ */
+export const SERVER_API_URL = process.env.API_ORIGIN ?? API_URL;
+
 export interface ApiErrorBody {
   error: { code: string; message: string; details?: Record<string, unknown>; requestId?: string };
 }
@@ -37,7 +60,7 @@ export class ApiError extends Error {
  * Only relative paths are accepted, so a caller can never redirect this client
  * at another origin — the host always comes from configuration.
  */
-export function buildUrl(path: string): string {
+export function buildUrl(path: string, base: string = API_URL): string {
   if (!path.startsWith('/')) {
     throw new Error(`API path must start with "/": ${path}`);
   }
@@ -53,7 +76,7 @@ export function buildUrl(path: string): string {
   if (path.startsWith('//') || path.includes('\\')) {
     throw new Error(`API path must start with "/" and be origin-relative: ${path}`);
   }
-  return `${API_URL}${path}`;
+  return `${base}${path}`;
 }
 
 export async function parseResponse<T>(response: Response): Promise<T> {
@@ -86,4 +109,3 @@ const UNAVAILABLE_STATUSES: ReadonlySet<number> = new Set([401, 403, 404]);
 export function isUnavailable(error: unknown): boolean {
   return error instanceof ApiError && UNAVAILABLE_STATUSES.has(error.status);
 }
-

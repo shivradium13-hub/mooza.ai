@@ -1,6 +1,6 @@
 import 'server-only';
 import { cookies } from 'next/headers';
-import { buildUrl, isUnavailable, parseResponse } from './api-shared';
+import { SERVER_API_URL, buildUrl, isUnavailable, parseResponse } from './api-shared';
 
 /**
  * SERVER-side API access.
@@ -21,7 +21,7 @@ export async function serverApi<T>(
     .map((c) => `${c.name}=${c.value}`)
     .join('; ');
 
-  const response = await fetch(buildUrl(path), {
+  const response = await fetch(buildUrl(path, SERVER_API_URL), {
     method: init.method ?? 'GET',
     headers: {
       'content-type': 'application/json',
