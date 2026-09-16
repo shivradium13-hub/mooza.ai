@@ -237,3 +237,20 @@ export function EyeOffIcon(props: IconProps) {
     </Glyph>
   );
 }
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M12 5.5v13M5.5 12h13" />
+    </Glyph>
+  );
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <circle cx="11" cy="11" r="6.2" />
+      <path d="m15.6 15.6 4.4 4.4" />
+    </Glyph>
+  );
+}
