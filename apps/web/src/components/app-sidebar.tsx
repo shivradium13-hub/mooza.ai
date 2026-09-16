@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { browserApi } from '@/lib/api-browser';
 import {
@@ -91,6 +91,31 @@ export function AppSidebar({
   const active = organizations.find((o) => o.organizationId === activeOrganizationId);
 
   /*
+   * While the drawer is over the page, the page behind it must not scroll.
+   * Without this a swipe meant for the menu scrolls the dashboard underneath,
+   * and closing the drawer leaves you somewhere you never navigated to.
+   *
+   * Escape closes it too: the drawer covers the screen, and a cover with no
+   * keyboard way out is a trap.
+   */
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
+  /*
    * Switching sends an organization id to the API. Safe, because the API
    * re-verifies membership server-side before writing it to the session — the
    * list rendered here is a convenience, never the authority.
@@ -138,7 +163,7 @@ export function AppSidebar({
                     href={href}
                     aria-current={current ? 'page' : undefined}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                    className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition lg:py-2 ${
                       current
                         ? 'bg-accent-soft font-medium text-accent'
                         : 'text-ink/75 hover:bg-black/[0.04] hover:text-ink'
@@ -165,7 +190,7 @@ export function AppSidebar({
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls="app-nav"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line"
+          className="-ml-1 inline-flex h-11 w-11 items-center justify-center rounded-lg border border-line"
         >
           <span className="sr-only">{open ? 'Close navigation' : 'Open navigation'}</span>
           <svg
@@ -188,12 +213,53 @@ export function AppSidebar({
         </Link>
       </div>
 
+      {/*
+       * The scrim. Tapping it closes the drawer, which is what a thumb reaches
+       * for first. `lg:hidden` because above that the sidebar is permanent and
+       * there is nothing to dim.
+       */}
+      {open ? (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+        />
+      ) : null}
+
       <aside
         id="app-nav"
         className={`${
           open ? 'flex' : 'hidden'
-        } w-full shrink-0 flex-col border-r border-line bg-white lg:flex lg:h-screen lg:w-[270px] lg:sticky lg:top-0`}
+        } fixed inset-y-0 left-0 z-50 w-[86%] max-w-[320px] shrink-0 flex-col overflow-y-auto border-r border-line bg-white shadow-2xl lg:static lg:z-auto lg:flex lg:h-screen lg:w-[270px] lg:max-w-none lg:shadow-none lg:sticky lg:top-0`}
       >
+        {/* Phone: the drawer's own header, because the page's top bar is now
+            behind the scrim and cannot be reached. */}
+        <div className="flex items-center gap-2.5 border-b border-line px-4 py-3 lg:hidden">
+          <Wordmark className="h-7 w-7" />
+          <span className="text-[17px] font-semibold tracking-tight">
+            Mooza<span className="brand-text">.ai</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-black/[0.05] hover:text-ink"
+          >
+            <span className="sr-only">Close navigation</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              aria-hidden="true"
+              className="h-5 w-5"
+            >
+              <path d="m6 6 12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
+
         <div className="hidden items-center gap-2.5 px-5 pt-5 pb-1 lg:flex">
           <Wordmark className="h-7 w-7" />
           <Link href="/dashboard" className="text-[17px] font-semibold tracking-tight">
