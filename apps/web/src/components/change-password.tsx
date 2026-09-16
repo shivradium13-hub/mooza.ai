@@ -4,7 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { ApiError } from '@/lib/api-shared';
 import { browserApi } from '@/lib/api-browser';
-import { Button, Card, CardHeader, ErrorNote, Field } from '@/components/ui';
+import { Button, Card, CardHeader, ErrorNote } from '@/components/ui';
+import { PasswordField } from '@/components/password-field';
 
 /** Mirrors the API's floor, so the obvious mistake is caught without a round trip. */
 const MIN_LENGTH = 12;
@@ -84,25 +85,22 @@ export function ChangePassword() {
         description="Changing it signs you out everywhere, including on this device."
       />
       <form onSubmit={onSubmit} className="max-w-sm space-y-4 p-5">
-        <Field
+        <PasswordField
           label="Current password"
           name="currentPassword"
-          type="password"
           required
           autoComplete="current-password"
         />
-        <Field
+        <PasswordField
           label="New password"
           name="newPassword"
-          type="password"
           required
           autoComplete="new-password"
           hint={`At least ${MIN_LENGTH} characters.`}
         />
-        <Field
+        <PasswordField
           label="Confirm new password"
           name="confirmPassword"
-          type="password"
           required
           autoComplete="new-password"
         />

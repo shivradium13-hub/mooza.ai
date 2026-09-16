@@ -218,3 +218,22 @@ export function SettingsIcon(props: IconProps) {
     </Glyph>
   );
 }
+
+export function EyeIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </Glyph>
+  );
+}
+
+export function EyeOffIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M9.9 5.1A8.6 8.6 0 0 1 12 4.9c6 0 9.5 6.2 9.5 6.2a16 16 0 0 1-2.6 3.3M6.6 6.7A16 16 0 0 0 2.5 11s3.5 6.2 9.5 6.2a8.8 8.8 0 0 0 3.6-.75" />
+      <path d="M10 10a2.8 2.8 0 0 0 4 4" />
+      <path d="m3.5 3.5 17 17" />
+    </Glyph>
+  );
+}

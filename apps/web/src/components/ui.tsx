@@ -64,6 +64,7 @@ export function Field({
   placeholder,
   hint,
   autoComplete,
+  adornment,
 }: {
   label: string;
   name: string;
@@ -74,19 +75,35 @@ export function Field({
   hint?: string;
   /** Defaults to `current-password` for password inputs; set `new-password` on a change or sign-up form so browsers offer to generate and store the new one instead of refilling the old. */
   autoComplete?: string;
+  /**
+   * Rendered inside the input, against its right edge — a reveal toggle, say.
+   *
+   * A slot rather than a built-in, so this file stays free of state and can go
+   * on being imported by the eleven server components that use `Card` and
+   * friends. Whatever needs state passes it in from a client component; see
+   * `PasswordField`.
+   */
+  adornment?: ReactNode;
 }) {
   return (
     <label className="block">
       <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
-      <input
-        name={name}
-        type={type}
-        required={required}
-        defaultValue={defaultValue}
-        placeholder={placeholder}
-        autoComplete={autoComplete ?? (type === 'password' ? 'current-password' : undefined)}
-        className="h-9 w-full rounded-lg border border-line bg-white px-3 text-sm outline-none focus:border-accent"
-      />
+      <span className="relative block">
+        <input
+          name={name}
+          type={type}
+          required={required}
+          defaultValue={defaultValue}
+          placeholder={placeholder}
+          autoComplete={autoComplete ?? (type === 'password' ? 'current-password' : undefined)}
+          className={`h-9 w-full rounded-lg border border-line bg-white px-3 text-sm outline-none focus:border-accent ${
+            adornment ? 'pr-10' : ''
+          }`}
+        />
+        {adornment ? (
+          <span className="absolute inset-y-0 right-1 flex items-center">{adornment}</span>
+        ) : null}
+      </span>
       {hint ? <span className="mt-1 block text-xs text-muted">{hint}</span> : null}
     </label>
   );

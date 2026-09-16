@@ -1,4 +1,7 @@
-import type { ReactNode } from 'react';
+'use client';
+
+import { useId, useState, type ReactNode } from 'react';
+import { EyeIcon, EyeOffIcon } from '@/components/marketing/icons';
 
 /**
  * Auth-screen vocabulary.
@@ -143,6 +146,10 @@ export function AuthField({
   /** Rendered on the label row, right-aligned — "Forgot password?" and the like. */
   trailing?: ReactNode;
 }) {
+  const isPassword = type === 'password';
+  const [revealed, setRevealed] = useState(false);
+  const describedBy = useId();
+
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
@@ -154,19 +161,42 @@ export function AuthField({
         </label>
         {trailing}
       </div>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        className={`h-12 w-full rounded-xl px-4 text-sm outline-none transition ${
-          tone === 'dark'
-            ? 'border border-abyss-line bg-white/[0.04] text-white placeholder:text-white/30 focus:border-brand-bright'
-            : 'border border-black/10 bg-white text-ink placeholder:text-ink/35 focus:border-brand'
-        }`}
-      />
+      <div className="relative">
+        <input
+          id={name}
+          name={name}
+          type={isPassword && revealed ? 'text' : type}
+          required={required}
+          placeholder={placeholder}
+          autoComplete={autoComplete}
+          className={`h-12 w-full rounded-xl px-4 text-sm outline-none transition ${
+            isPassword ? 'pr-12' : ''
+          } ${
+            tone === 'dark'
+              ? 'border border-abyss-line bg-white/[0.04] text-white placeholder:text-white/30 focus:border-brand-bright'
+              : 'border border-black/10 bg-white text-ink placeholder:text-ink/35 focus:border-brand'
+          }`}
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            onClick={() => setRevealed((v) => !v)}
+            aria-pressed={revealed}
+            aria-describedby={describedBy}
+            className={`absolute inset-y-0 right-2 my-auto inline-flex h-9 w-9 items-center justify-center rounded-lg transition ${
+              tone === 'dark'
+                ? 'text-white/45 hover:bg-white/10 hover:text-white'
+                : 'text-ink/45 hover:bg-black/[0.05] hover:text-ink'
+            }`}
+          >
+            {/* The label names the ACTION, which is what a screen reader user needs. */}
+            <span className="sr-only" id={describedBy}>
+              {revealed ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
+            </span>
+            {revealed ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+          </button>
+        ) : null}
+      </div>
       {hint ? (
         <p className={`mt-1.5 text-xs ${tone === 'dark' ? 'text-white/40' : 'text-muted'}`}>
           {hint}
