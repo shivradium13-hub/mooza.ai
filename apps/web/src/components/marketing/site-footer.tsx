@@ -61,10 +61,15 @@ export function SiteFooter() {
               <h2 className="text-xs font-semibold tracking-[0.12em] text-ink uppercase">
                 {column.heading}
               </h2>
-              <ul className="mt-4 space-y-2.5">
+              {/* Roomier rows on a phone: a 20px line of text is a poor thumb target,
+                  and these sit in a stack where the neighbour is easy to hit. */}
+              <ul className="mt-3 space-y-0.5 sm:mt-4 sm:space-y-2.5">
                 {column.links.map((link) => (
                   <li key={link.href + link.label}>
-                    <Link href={link.href} className="text-sm text-muted transition hover:text-ink">
+                    <Link
+                      href={link.href}
+                      className="-mx-2 block rounded-md px-2 py-2.5 text-sm text-muted transition hover:text-ink sm:mx-0 sm:px-0 sm:py-0"
+                    >
                       {link.label}
                     </Link>
                   </li>
