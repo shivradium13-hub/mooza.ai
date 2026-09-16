@@ -213,8 +213,11 @@ export function InboxIcon(props: IconProps) {
 export function SettingsIcon(props: IconProps) {
   return (
     <Glyph {...props}>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 3.2v2.1M12 18.7v2.1M20.8 12h-2.1M5.3 12H3.2M18.2 5.8l-1.5 1.5M7.3 16.7l-1.5 1.5M18.2 18.2l-1.5-1.5M7.3 7.3 5.8 5.8" />
+      {/* The teeth MEET the rim. Detached spokes around a bare circle read as a
+          sun, which matters where the icon stands alone without its label. */}
+      <circle cx="12" cy="12" r="2.8" />
+      <circle cx="12" cy="12" r="7" />
+      <path d="M12 5V2.9M12 19v2.1M19 12h2.1M5 12H2.9M16.95 7.05 18.5 5.5M7.05 16.95 5.5 18.5M16.95 16.95l1.55 1.55M7.05 7.05 5.5 5.5" />
     </Glyph>
   );
 }

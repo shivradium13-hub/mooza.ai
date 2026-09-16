@@ -150,8 +150,15 @@ export function AppSidebar({
   useEffect(() => {
     if (!open && !createOpen) return;
 
+    /*
+     * Only what actually covers the screen locks it. The drawer and the sheet
+     * do; the desktop popover is a small thing in the corner of a page still
+     * being read, and freezing that page — plus the reflow when the scrollbar
+     * goes — would be a side effect nobody asked for.
+     */
+    const covering = open || window.matchMedia('(max-width: 1023px)').matches;
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    if (covering) document.body.style.overflow = 'hidden';
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
@@ -161,7 +168,7 @@ export function AppSidebar({
     document.addEventListener('keydown', onKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      if (covering) document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [open, createOpen]);
