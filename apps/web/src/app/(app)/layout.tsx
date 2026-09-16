@@ -1,27 +1,12 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { serverApiOrNull } from '@/lib/api-server';
-import { OrganizationSwitcher } from '@/components/organization-switcher';
+import { AppSidebar } from '@/components/app-sidebar';
 
 interface MeResponse {
   user: { id: string };
   organizations: Array<{ organizationId: string; name: string; slug: string; role: string }>;
   activeOrganizationId: string | null;
 }
-
-const NAV = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/knowledge', label: 'Knowledge' },
-  { href: '/agents', label: 'Agents' },
-  { href: '/research', label: 'Research' },
-  { href: '/chatbots', label: 'Chatbots' },
-  { href: '/inbox', label: 'Inbox' },
-  { href: '/credentials', label: 'Credentials' },
-  { href: '/usage', label: 'Usage' },
-  { href: '/members', label: 'Members' },
-  { href: '/settings', label: 'Settings' },
-];
 
 /**
  * Authenticated shell.
@@ -37,41 +22,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const active = me.organizations.find((o) => o.organizationId === me.activeOrganizationId);
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-line bg-white">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4">
-          <Link href="/dashboard" className="text-sm font-semibold tracking-tight">
-            Mooza<span className="brand-text">.ai</span>
-          </Link>
+    <div className="min-h-screen bg-chalk lg:flex">
+      <AppSidebar organizations={me.organizations} activeOrganizationId={me.activeOrganizationId} />
 
-          <nav className="flex items-center gap-1">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-lg px-2.5 py-1.5 text-sm text-muted transition hover:bg-gray-50 hover:text-ink"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="ml-auto">
-            <OrganizationSwitcher
-              organizations={me.organizations}
-              activeOrganizationId={me.activeOrganizationId}
-            />
-          </div>
+      <main className="min-w-0 flex-1">
+        <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
+          {active ? null : (
+            <div className="mb-6 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              No organization is selected for this session.
+            </div>
+          )}
+          {children}
         </div>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        {active ? null : (
-          <div className="mb-6 rounded-lg bg-amber-50 px-4 py-3 text-xs text-amber-900">
-            No organization is selected for this session.
-          </div>
-        )}
-        {children}
       </main>
     </div>
   );

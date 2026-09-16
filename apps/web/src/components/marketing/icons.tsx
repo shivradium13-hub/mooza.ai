@@ -1,9 +1,9 @@
 /**
- * Inline icon set.
+ * Inline icon set, shared by the marketing site and the application shell.
  *
- * Hand-drawn on a 24x24 grid rather than pulled from an icon package: the
- * marketing site needs eleven glyphs, and a dependency that ships a thousand
- * is a bundle and a supply-chain surface bought for nothing.
+ * Hand-drawn on a 24x24 grid rather than pulled from an icon package: this
+ * needs about fifteen glyphs, and a dependency that ships a thousand is a
+ * bundle and a supply-chain surface bought for nothing.
  *
  * Every icon is `aria-hidden` — each one sits beside a real text label, so
  * announcing it again would only make a screen reader repeat itself.
@@ -177,5 +177,44 @@ export function Wordmark({ className = 'h-6 w-6' }: IconProps) {
         strokeLinejoin="round"
       />
     </svg>
+  );
+}
+
+/* --- Application shell -------------------------------------------------- */
+
+export function DashboardIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <rect x="3.5" y="3.5" width="7" height="7" rx="1.8" />
+      <rect x="13.5" y="3.5" width="7" height="7" rx="1.8" />
+      <rect x="3.5" y="13.5" width="7" height="7" rx="1.8" />
+      <rect x="13.5" y="13.5" width="7" height="7" rx="1.8" />
+    </Glyph>
+  );
+}
+
+export function ProjectIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M3.5 7.2a2 2 0 0 1 2-2h3.3a2 2 0 0 1 1.5.7l1 1.1h7.2a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z" />
+    </Glyph>
+  );
+}
+
+export function InboxIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M3.5 13.5 6 5.8a2 2 0 0 1 1.9-1.3h8.2A2 2 0 0 1 18 5.8l2.5 7.7v3.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z" />
+      <path d="M3.5 13.5h4l1 2.2h7l1-2.2h4" />
+    </Glyph>
+  );
+}
+
+export function SettingsIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3.2v2.1M12 18.7v2.1M20.8 12h-2.1M5.3 12H3.2M18.2 5.8l-1.5 1.5M7.3 16.7l-1.5 1.5M18.2 18.2l-1.5-1.5M7.3 7.3 5.8 5.8" />
+    </Glyph>
   );
 }
