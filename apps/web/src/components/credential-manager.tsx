@@ -29,9 +29,9 @@ interface TestResult {
 }
 
 const PROVIDERS = [
-  { id: 'anthropic', label: 'Anthropic' },
-  { id: 'openai', label: 'OpenAI' },
-  { id: 'groq', label: 'Groq' },
+  { id: 'anthropic', label: 'Anthropic', keyLooksLike: 'sk-ant-…' },
+  { id: 'openai', label: 'OpenAI', keyLooksLike: 'sk-…' },
+  { id: 'groq', label: 'Groq', keyLooksLike: 'gsk_…' },
 ];
 
 export function CredentialManager({
@@ -43,6 +43,18 @@ export function CredentialManager({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  /*
+   * No default. The select used to start on Anthropic, so the commonest way to
+   * add a credential was to fill in the name, paste the key, and save it
+   * against whichever provider happened to be first in the list. The key is
+   * stored, the row says "active", and nothing is wrong until the first call —
+   * which fails as an authentication error, pointing at the key rather than at
+   * the four letters above it.
+   *
+   * An empty value with `required` makes the browser refuse to submit. A
+   * choice that has to be made cannot be made wrong by not making it.
+   */
+  const [provider, setProvider] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tests, setTests] = useState<Record<string, TestResult>>({});
@@ -67,6 +79,7 @@ export function CredentialManager({
       });
       // Clear the form immediately so the key does not linger in the DOM.
       form.reset();
+      setProvider('');
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -131,12 +144,17 @@ export function CredentialManager({
               <span className="mb-1 block text-xs font-medium text-muted">Provider</span>
               <select
                 name="providerId"
-                defaultValue="anthropic"
+                required
+                value={provider}
+                onChange={(e) => setProvider(e.target.value)}
                 className="h-9 w-full rounded-lg border border-line bg-white px-2 text-sm outline-none focus:border-accent"
               >
-                {PROVIDERS.map((provider) => (
-                  <option key={provider.id} value={provider.id}>
-                    {provider.label}
+                <option value="" disabled>
+                  Choose a provider…
+                </option>
+                {PROVIDERS.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.label}
                   </option>
                 ))}
               </select>
@@ -153,7 +171,16 @@ export function CredentialManager({
                   required
                   autoComplete="off"
                   spellCheck={false}
-                  placeholder="sk-…"
+                  /*
+                   * The placeholder follows the chosen provider. It used to
+                   * read `sk-…` whatever was selected, which quietly argued
+                   * that a `gsk_` key in hand was the wrong key rather than
+                   * the right key under the wrong provider.
+                   */
+                  placeholder={
+                    PROVIDERS.find((option) => option.id === provider)?.keyLooksLike ??
+                    'Choose a provider first'
+                  }
                   className="h-9 w-full rounded-lg border border-line bg-white px-3 font-mono text-sm outline-none focus:border-accent"
                 />
                 <span className="mt-1 block text-xs text-muted">
