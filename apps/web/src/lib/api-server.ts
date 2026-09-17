@@ -21,13 +21,16 @@ export async function serverApi<T>(
     .map((c) => `${c.name}=${c.value}`)
     .join('; ');
 
+  const hasBody = init.body !== undefined;
+
   const response = await fetch(buildUrl(path, SERVER_API_URL), {
     method: init.method ?? 'GET',
     headers: {
-      'content-type': 'application/json',
+      // Only when there is one to describe — see the note in api-browser.ts.
+      ...(hasBody ? { 'content-type': 'application/json' } : {}),
       ...(cookieHeader ? { cookie: cookieHeader } : {}),
     },
-    ...(init.body !== undefined ? { body: JSON.stringify(init.body) } : {}),
+    ...(hasBody ? { body: JSON.stringify(init.body) } : {}),
     cache: 'no-store',
   });
 
