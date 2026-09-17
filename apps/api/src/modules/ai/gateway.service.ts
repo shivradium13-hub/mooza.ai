@@ -15,7 +15,7 @@ import {
   type TokenUsage,
 } from '@moka/ai';
 import { EMPTY_USAGE } from '@moka/ai';
-import type { TenantContext } from '@moka/core';
+import { AppError, type TenantContext } from '@moka/core';
 import { Feature } from '@moka/billing';
 import { DATABASE } from '../../database/database.module.js';
 import { CredentialsService } from './credentials.service.js';
@@ -252,15 +252,34 @@ export class GatewayService {
 
     try {
       /*
-       * Routing happens INSIDE the try. It can fail — no credential, no model
-       * fits — and a failure there must reach the client as a normalised
-       * error event like any other, not escape the generator and surface as a
-       * generic 500 after the SSE headers have already been sent.
+       * THE SAME GATES AS `chat`, IN THE SAME ORDER. Streaming had none of
+       * them: it ran on an exhausted balance, it would route to a model the
+       * plan excludes, and it never debited what it spent. A caller who
+       * preferred the streaming endpoint got their AI free and unmetered, and
+       * nothing about the ledger said so — usage rows were written while the
+       * balance sat still.
+       *
+       * Everything here runs INSIDE the try. Each of these can fail, and a
+       * failure must reach the client as a normalised error event rather than
+       * escaping the generator as a 500 after the SSE headers have gone out.
        */
+      await this.credits.requireCredit(context);
+
+      if (request.model) {
+        await this.entitlements.requireAllowed(context, Feature.AI_MODELS, request.model);
+      }
+
       const plan = planRoute(request, {
         availableProviders: await this.credentials.availableProviders(context),
       });
       model = plan.primary;
+
+      /*
+       * Checked before a byte is sent, and there is no second chance: this
+       * path has no fallback, so unlike `chat` there is no next candidate to
+       * try. An unlicensed primary ends the turn.
+       */
+      await this.entitlements.requireAllowed(context, Feature.AI_MODELS, model.id);
 
       // Announced before the first token, so a client watching the stream can
       // label the answer while it is still being written.
@@ -278,24 +297,35 @@ export class GatewayService {
         yield event;
       }
     } catch (error) {
-      const providerError =
-        error instanceof ProviderError
-          ? error
-          : new ProviderError({
-              code: ProviderErrorCode.UNKNOWN,
-              providerId: model?.providerId ?? 'gateway',
-              modelId: model?.id ?? null,
-              internalMessage: error instanceof Error ? error.message : String(error),
-            });
-      errorCode = providerError.code;
-      yield { type: 'error', code: providerError.code, message: providerError.publicMessage };
+      /*
+       * An AppError keeps ITS OWN code. A refused entitlement or an exhausted
+       * balance is not a provider failure, and flattening both to
+       * PROVIDER_UNKNOWN tells the user "something went wrong" about the two
+       * conditions they can actually do something about.
+       */
+      if (error instanceof AppError && !(error instanceof ProviderError)) {
+        errorCode = error.code;
+        yield { type: 'error', code: error.code, message: error.publicMessage };
+      } else {
+        const providerError =
+          error instanceof ProviderError
+            ? error
+            : new ProviderError({
+                code: ProviderErrorCode.UNKNOWN,
+                providerId: model?.providerId ?? 'gateway',
+                modelId: model?.id ?? null,
+                internalMessage: error instanceof Error ? error.message : String(error),
+              });
+        errorCode = providerError.code;
+        yield { type: 'error', code: providerError.code, message: providerError.publicMessage };
+      }
     } finally {
       // Only record when a model was actually selected. A routing failure
       // consumed no provider quota, so inventing a ledger row for it would
       // misreport usage.
       if (model) {
         const cost = estimateCostByModelId(model.id, usage);
-        await this.record(context, {
+        const usageRecordId = await this.record(context, {
           model,
           operation: 'stream',
           usage,
@@ -305,6 +335,15 @@ export class GatewayService {
           errorCode,
           projectId: meta.projectId ?? null,
           requestId: meta.requestId,
+        });
+
+        // And DEBITED, like `chat`. A usage row that never moves the balance
+        // is a record of spending nobody is charged for.
+        await this.credits.charge(context, {
+          costMicroUsd: cost.microUsd,
+          usageRecordId,
+          requestId: meta.requestId,
+          reason: `stream via ${model.id}`,
         });
       }
     }
