@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Res } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { AppError, Permission, ValidationError, type TenantContext } from '@moka/core';
+import { AppError, ErrorCode, Permission, ValidationError, type TenantContext } from '@moka/core';
 import { stripTenantKeys } from '@moka/tenancy';
-import { ProviderError } from '@moka/ai';
+import { ProviderError, ProviderErrorCode } from '@moka/ai';
 import { GatewayService } from '../ai/gateway.service.js';
 import { CurrentTenant, RequestId, RequirePermission } from '../../common/decorators.js';
 import { RATE_LIMITER, enforceRateLimit, type RateLimiter } from '../../common/rate-limit.js';
@@ -68,13 +68,32 @@ function errorCodeFor(error: unknown): string {
   return 'internal';
 }
 
-/** What the user is shown in place of an answer. Never an upstream string. */
+/**
+ * What the user is shown in place of an answer. Never an upstream string.
+ *
+ * Matched against the ENUMS rather than against string literals. Writing the
+ * codes out by hand is how this shipped once already saying "this turn could
+ * not be completed" to someone whose only problem was an unconfigured API key
+ * — the one failure here with an obvious fix, reported as the one with none.
+ */
 function failureTextFor(code: string): string {
-  if (code === 'no_credential') {
-    return 'No provider credential is configured for this organization, so there is no model to answer with. Add one in Credentials.';
+  if (code === ProviderErrorCode.NO_CREDENTIAL || code === ProviderErrorCode.AUTHENTICATION) {
+    return 'No usable provider credential is configured for this organization, so there is no model to answer with. Add one in Credentials.';
   }
-  if (code === 'quota_exceeded' || code === 'rate_limited') {
-    return 'The model provider is refusing further requests right now. Try again shortly.';
+  if (code === ErrorCode.QUOTA_EXCEEDED) {
+    return 'This organization is out of credit for model calls. Usage shows where it went.';
+  }
+  if (code === ProviderErrorCode.RATE_LIMITED || code === ErrorCode.RATE_LIMITED) {
+    return 'The model provider is rate limiting requests right now. Try again shortly.';
+  }
+  if (code === ProviderErrorCode.UNAVAILABLE) {
+    return 'The model provider is down or did not respond in time. The question above was kept; try sending it again.';
+  }
+  if (code === ProviderErrorCode.CONTEXT_LENGTH) {
+    return 'This thread is now longer than the model can read in one go. Start a new one to carry on.';
+  }
+  if (code === ProviderErrorCode.CONTENT_FILTERED) {
+    return 'The provider declined to answer this one. Nothing is wrong with the thread; rephrasing usually works.';
   }
   return 'This turn could not be completed. The question above was kept; try sending it again.';
 }
