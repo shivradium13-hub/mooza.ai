@@ -75,7 +75,15 @@ async function bootstrap(): Promise<void> {
    * `{}` and not null, so a handler that destructures the body is unchanged.
    * A body that is present but malformed still fails, as it must.
    */
-  adapter.getInstance().addContentTypeParser(
+  const fastify = adapter.getInstance();
+  /*
+   * REMOVE FIRST. Fastify already has a parser for this type and refuses a
+   * second one — `addContentTypeParser` alone throws "Content type parser
+   * 'application/json' already present." at boot, which is a crash loop, not
+   * an error message. Learned by shipping it.
+   */
+  fastify.removeContentTypeParser('application/json');
+  fastify.addContentTypeParser(
     'application/json',
     { parseAs: 'string', bodyLimit: Math.ceil((MAX_DOCUMENT_BYTES * 4) / 3) + 65_536 },
     (_request, body: string, done) => {
