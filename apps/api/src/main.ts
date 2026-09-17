@@ -54,54 +54,6 @@ async function bootstrap(): Promise<void> {
     bodyLimit: Math.ceil((MAX_DOCUMENT_BYTES * 4) / 3) + 65_536,
   });
 
-  /*
-   * AN EMPTY BODY IS A VALID REQUEST, even with a JSON content-type.
-   *
-   * Fastify refuses it by default: `POST /v1/credentials/:id/revoke` with
-   * `content-type: application/json` and nothing after the headers answers
-   * "Body cannot be empty when content-type is set to 'application/json'".
-   *
-   * That is not a client error. Roughly a dozen routes here take no body at
-   * all — revoke, test, close, logout, every DELETE — and the obvious way to
-   * call one is the way every HTTP client does it by default:
-   *
-   *     curl -X POST -H 'content-type: application/json' .../revoke
-   *
-   * Our own web app did exactly that and every such button was broken, with a
-   * message naming a header the user never set. The fix belongs here rather
-   * than only in that client, because the next caller is somebody's script and
-   * it will make the same reasonable request.
-   *
-   * `{}` and not null, so a handler that destructures the body is unchanged.
-   * A body that is present but malformed still fails, as it must.
-   */
-  const fastify = adapter.getInstance();
-  /*
-   * REMOVE FIRST. Fastify already has a parser for this type and refuses a
-   * second one — `addContentTypeParser` alone throws "Content type parser
-   * 'application/json' already present." at boot, which is a crash loop, not
-   * an error message. Learned by shipping it.
-   */
-  fastify.removeContentTypeParser('application/json');
-  fastify.addContentTypeParser(
-    'application/json',
-    { parseAs: 'string', bodyLimit: Math.ceil((MAX_DOCUMENT_BYTES * 4) / 3) + 65_536 },
-    (_request, body: string, done) => {
-      const text = body.trim();
-      if (text.length === 0) {
-        done(null, {});
-        return;
-      }
-      try {
-        done(null, JSON.parse(text) as unknown);
-      } catch (error) {
-        const failure = error as Error & { statusCode?: number };
-        failure.statusCode = 400;
-        done(failure, undefined);
-      }
-    },
-  );
-
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, adapter, {
     logger: ['error', 'warn'],
     bufferLogs: true,
