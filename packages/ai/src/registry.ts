@@ -10,11 +10,17 @@ import { Capability, type ModelDescriptor } from './types.js';
  * the database; what a model *is* lives here.
  *
  * ON PRICING
- * Anthropic figures are taken from the bundled `claude-api` reference and are
- * dated. OpenAI and Google pricing could not be verified in this environment,
- * so those models carry `pricing: null` and their cost is reported as UNKNOWN
- * rather than estimated. Token counts are still tracked in full. Inventing a
- * dollar figure would put a number people budget against behind a guess (§45).
+ * Anthropic figures are taken from the bundled `claude-api` reference; Groq's
+ * from its own published model pages. Both carry the source and the date they
+ * were read, because a price is a number people budget against and one with no
+ * provenance cannot be re-checked.
+ *
+ * OpenAI and Google pricing could not be verified in this environment, so
+ * those models carry `pricing: null` and their cost is reported as UNKNOWN
+ * rather than estimated. Token counts are still tracked in full. A model with
+ * null pricing is NOT free — `planDebit` records the call as unpriced and
+ * charges nothing, and the Usage page says how many such calls there were, so
+ * the gap is visible rather than silently zero (§45).
  */
 
 const ANTHROPIC_PRICING_SOURCE = 'Anthropic claude-api skill reference';
@@ -48,6 +54,37 @@ function anthropicModel(params: {
   };
 }
 
+const GROQ_PRICING_SOURCE = 'https://console.groq.com/docs/models';
+const GROQ_PRICING_DATE = '2026-09-17';
+
+function groqModel(params: {
+  id: string;
+  displayName: string;
+  capabilities: readonly Capability[];
+  contextWindow: number;
+  maxOutputTokens: number;
+  inputPerMillion: number;
+  outputPerMillion: number;
+  routingPriority: number;
+}): ModelDescriptor {
+  return {
+    id: params.id,
+    providerId: 'groq',
+    displayName: params.displayName,
+    capabilities: params.capabilities,
+    contextWindow: params.contextWindow,
+    maxOutputTokens: params.maxOutputTokens,
+    pricing: {
+      inputPerMillion: params.inputPerMillion,
+      outputPerMillion: params.outputPerMillion,
+      source: GROQ_PRICING_SOURCE,
+      verifiedOn: GROQ_PRICING_DATE,
+    },
+    routingPriority: params.routingPriority,
+    status: 'available',
+  };
+}
+
 /** Pricing deliberately unknown — see the note above. */
 function unpricedModel(params: {
   id: string;
@@ -57,8 +94,9 @@ function unpricedModel(params: {
   contextWindow: number;
   maxOutputTokens: number;
   routingPriority: number;
+  status?: ModelDescriptor['status'];
 }): ModelDescriptor {
-  return { ...params, pricing: null, status: 'available' };
+  return { ...params, pricing: null, status: params.status ?? 'available' };
 }
 
 const FULL = [
@@ -144,7 +182,19 @@ export const MODELS: readonly ModelDescriptor[] = [
     routingPriority: 50,
   }),
 
-  // --- Google (pricing unverified in this build) ----------------------------
+  /*
+   * --- Google ---------------------------------------------------------------
+   *
+   * DESCRIBED, NOT CALLABLE. There is no Google adapter, so nothing can reach
+   * this model — and until now it said `available`, which put it in the
+   * catalogue as something a user could choose. Picking it got them "no
+   * adapter registered for provider google", a sentence about our code
+   * delivered as though it were about their request.
+   *
+   * Kept rather than deleted, because the description is correct and is what
+   * an adapter would be written against. `unimplemented` is the honest state:
+   * we know the model, we cannot call it.
+   */
   unpricedModel({
     id: 'gemini-2.0-flash',
     providerId: 'google',
@@ -153,6 +203,59 @@ export const MODELS: readonly ModelDescriptor[] = [
     contextWindow: 1_000_000,
     maxOutputTokens: 8_192,
     routingPriority: 45,
+    status: 'unimplemented',
+  }),
+
+  /*
+   * --- Groq -----------------------------------------------------------------
+   *
+   * OPEN-WEIGHT MODELS ON GROQ'S OWN HARDWARE, at roughly 500 tokens/second.
+   * Priced and dated from Groq's published model pages, unlike OpenAI and
+   * Google below, so cost reporting works for these.
+   *
+   * THE IDS REALLY DO BEGIN WITH `openai/`. These are OpenAI's open-weight
+   * gpt-oss models, served by Groq; `openai/gpt-oss-120b` is the exact string
+   * Groq's API expects. It is not a typo and it is not the OpenAI provider —
+   * `providerId` is what decides whose credential and whose endpoint is used.
+   *
+   * Groq's Llama models are deliberately absent: `llama-3.1-8b-instant` and
+   * `llama-3.3-70b-versatile` were shut down for free and developer tiers on
+   * 2026-08-16, and Groq names these two as the migration path. Registering a
+   * model that no longer answers would turn a dead id into a routing failure
+   * nobody could explain.
+   *
+   * No VISION on either: gpt-oss takes text only, confirmed on the model
+   * pages. No LONG_CONTEXT either — 131k is a large window but below the
+   * threshold at which the router asks for that capability, and claiming it
+   * would route 150k-token requests to a model that cannot hold them.
+   */
+  groqModel({
+    id: 'openai/gpt-oss-120b',
+    displayName: 'GPT-OSS 120B (Groq)',
+    capabilities: [Capability.TEXT, Capability.TOOLS, Capability.REASONING, Capability.FAST],
+    contextWindow: 131_072,
+    maxOutputTokens: 65_536,
+    inputPerMillion: 0.15,
+    outputPerMillion: 0.6,
+    // Ahead of gpt-4o: same input price as gpt-4o-mini, far faster, and with
+    // a real cost figure attached rather than an unknown one.
+    routingPriority: 35,
+  }),
+  groqModel({
+    id: 'openai/gpt-oss-20b',
+    displayName: 'GPT-OSS 20B (Groq)',
+    capabilities: [
+      Capability.TEXT,
+      Capability.TOOLS,
+      Capability.REASONING,
+      Capability.FAST,
+      Capability.CHEAP,
+    ],
+    contextWindow: 131_072,
+    maxOutputTokens: 65_536,
+    inputPerMillion: 0.075,
+    outputPerMillion: 0.3,
+    routingPriority: 55,
   }),
 ];
 

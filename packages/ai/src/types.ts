@@ -195,5 +195,15 @@ export interface ModelDescriptor {
   readonly pricing: ModelPricing | null;
   /** Lower is preferred when several models satisfy a request equally. */
   readonly routingPriority: number;
-  readonly status: 'available' | 'deprecated';
+  /**
+   * `unimplemented` means the model is described here but NO ADAPTER can call
+   * it. Distinct from `deprecated`, which is the provider's decision about the
+   * model; this is ours about our own code.
+   *
+   * It exists so an unreachable model can be recorded rather than listed as
+   * usable. `listModels` and the router both require `available`, so such a
+   * model is never offered and never routed to — instead of appearing in the
+   * catalogue and failing with "no adapter registered" once somebody picks it.
+   */
+  readonly status: 'available' | 'deprecated' | 'unimplemented';
 }

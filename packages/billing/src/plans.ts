@@ -36,8 +36,16 @@ export interface PlanDefinition {
 const MICRO = 1_000_000;
 const GB = 1024 * 1024 * 1024;
 
-/** Models a plan may call. Ids match `packages/ai` registry entries. */
-const CHEAP_MODELS = ['claude-haiku-4-5-20251001', 'gpt-4o-mini'];
+/**
+ * Models a plan may call. Every id must exist in the `packages/ai` registry —
+ * asserted by apps/api's plan-allowlist test, because it did not.
+ *
+ * `claude-haiku-4-5-20251001` was here, and the registry's id is
+ * `claude-haiku-4-5`. Nothing matched it, so a Free organization with a
+ * perfectly good Anthropic key was refused its own cheapest model and left
+ * with one usable model instead of two, reported as an entitlement problem.
+ */
+const CHEAP_MODELS = ['claude-haiku-4-5', 'gpt-4o-mini', 'openai/gpt-oss-20b'];
 
 export const DEFAULT_PLANS: readonly PlanDefinition[] = [
   {

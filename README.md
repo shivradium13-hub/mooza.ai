@@ -182,6 +182,20 @@ All outbound traffic goes through `safeFetch`, which validates the address in
 the connection path itself rather than before it — checking a hostname and then
 letting `fetch` re-resolve it is a DNS-rebinding hole.
 
+**Three providers have adapters: Anthropic, OpenAI and Groq.** Groq reuses the
+OpenAI adapter, because it speaks that wire format at its own address — what
+makes it a different provider is the credential and the endpoint, not the
+protocol. Its two `openai/gpt-oss-*` models really are named that: they are
+OpenAI's open-weight models served on Groq's hardware, and `providerId` is what
+decides whose key pays.
+
+Groq and Anthropic models carry real prices with the source and the date they
+were read. OpenAI's are `null` in this build because they could not be
+verified here — which means those calls are recorded as **unpriced** and
+charged nothing, and the Usage page counts them, rather than being silently
+free. `gemini-2.0-flash` is in the registry as `unimplemented`: described, and
+not callable, because no Google adapter exists.
+
 ---
 
 ## Agents

@@ -2,7 +2,13 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import { z } from 'zod';
 import { Permission, ValidationError, type TenantContext } from '@moka/core';
 import { stripTenantKeys } from '@moka/tenancy';
-import { ProviderError, createAnthropicAdapter, createOpenAiAdapter } from '@moka/ai';
+import {
+  PING_MODEL_BY_PROVIDER,
+  ProviderError,
+  SUPPORTED_PROVIDER_IDS,
+  createProviderAdapter,
+  isSupportedProviderId,
+} from '@moka/ai';
 import { VaultService } from './vault.service.js';
 import { CurrentTenant, RequestId, RequirePermission } from '../../common/decorators.js';
 
@@ -23,7 +29,9 @@ import { CurrentTenant, RequestId, RequirePermission } from '../../common/decora
 const idSchema = z.string().uuid();
 
 const createSchema = z.object({
-  providerId: z.enum(['anthropic', 'openai', 'google']),
+  // The list comes from @moka/ai, so a provider that gains an adapter becomes
+  // selectable here without a second list having to be remembered.
+  providerId: z.enum(SUPPORTED_PROVIDER_IDS),
   name: z.string().min(1).max(120),
   // Bounded so an oversized body cannot be used to probe memory behaviour.
   apiKey: z.string().min(8).max(1000),
@@ -105,14 +113,8 @@ export class CredentialsController {
       };
     }
 
-    const factory =
-      credential.providerId === 'anthropic'
-        ? createAnthropicAdapter
-        : credential.providerId === 'openai'
-          ? createOpenAiAdapter
-          : null;
-
-    if (!factory) {
+    const adapter = createProviderAdapter(credential.providerId, resolved);
+    if (!adapter || !isSupportedProviderId(credential.providerId)) {
       return {
         ok: false,
         reason: `Connection testing is not implemented for ${credential.providerId}.`,
@@ -121,9 +123,9 @@ export class CredentialsController {
 
     try {
       // One token, one word. Enough to prove authentication without spending.
-      await factory(resolved).chat(
+      await adapter.chat(
         { model: null, messages: [{ role: 'user', content: 'ping' }], maxTokens: 1 },
-        credential.providerId === 'anthropic' ? 'claude-haiku-4-5' : 'gpt-4o-mini',
+        PING_MODEL_BY_PROVIDER[credential.providerId],
       );
       await this.vault.recordTestResult(tenant, credentialId, true);
       return { ok: true };

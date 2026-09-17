@@ -3,8 +3,7 @@ import { Database, usageRecords } from '@moka/db';
 import {
   ProviderError,
   ProviderErrorCode,
-  createAnthropicAdapter,
-  createOpenAiAdapter,
+  createProviderAdapter,
   estimateCostByModelId,
   planRoute,
   type ChatRequest,
@@ -35,12 +34,6 @@ import { getLogger } from '../../common/logger.js';
  * hides exactly the traffic worth investigating.
  */
 
-type AdapterFactory = (credential: { apiKey: string; baseUrl?: string }) => ProviderAdapter;
-
-const ADAPTERS: Record<string, AdapterFactory> = {
-  anthropic: createAnthropicAdapter,
-  openai: createOpenAiAdapter,
-};
 
 export interface GatewayResult extends ChatResponse {
   /** Micro-dollars, or null when pricing for the model is unknown. */
@@ -62,16 +55,6 @@ export class GatewayService {
     context: TenantContext,
     model: ModelDescriptor,
   ): Promise<ProviderAdapter> {
-    const factory = ADAPTERS[model.providerId];
-    if (!factory) {
-      throw new ProviderError({
-        code: ProviderErrorCode.INVALID_REQUEST,
-        providerId: model.providerId,
-        modelId: model.id,
-        internalMessage: `No adapter registered for provider ${model.providerId}.`,
-      });
-    }
-
     const credential = await this.credentials.resolve(context, model.providerId);
     if (!credential) {
       throw new ProviderError({
@@ -82,7 +65,17 @@ export class GatewayService {
     }
 
     // Constructed per request so a credential never outlives its use.
-    return factory(credential);
+    const adapter = createProviderAdapter(model.providerId, credential);
+    if (!adapter) {
+      throw new ProviderError({
+        code: ProviderErrorCode.INVALID_REQUEST,
+        providerId: model.providerId,
+        modelId: model.id,
+        internalMessage: `No adapter registered for provider ${model.providerId}.`,
+      });
+    }
+
+    return adapter;
   }
 
   /**

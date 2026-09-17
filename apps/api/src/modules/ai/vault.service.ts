@@ -23,7 +23,7 @@ import {
   ValidationError,
   type TenantContext,
 } from '@moka/core';
-import type { ProviderCredential } from '@moka/ai';
+import { SUPPORTED_PROVIDER_IDS, type ProviderCredential } from '@moka/ai';
 import { DATABASE } from '../../database/database.module.js';
 import { AuditService } from '../../common/audit.service.js';
 import { getLogger } from '../../common/logger.js';
@@ -64,7 +64,16 @@ export interface CredentialDto {
 }
 
 /** Providers that may be registered. Keeps a typo from creating dead rows. */
-const SUPPORTED_PROVIDERS: ReadonlySet<string> = new Set(['anthropic', 'openai', 'google']);
+/**
+ * From @moka/ai, so this cannot drift from the adapters.
+ *
+ * It listed `google`, for which no adapter exists: a key could be stored,
+ * encrypted and shown as configured, and every call using it would fail at the
+ * gateway with "no adapter registered". Accepting a credential the system
+ * cannot use is a promise made at the only moment the user is paying
+ * attention.
+ */
+const SUPPORTED_PROVIDERS: ReadonlySet<string> = new Set(SUPPORTED_PROVIDER_IDS);
 
 @Injectable()
 export class VaultService {

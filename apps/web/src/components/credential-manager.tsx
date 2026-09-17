@@ -31,7 +31,7 @@ interface TestResult {
 const PROVIDERS = [
   { id: 'anthropic', label: 'Anthropic' },
   { id: 'openai', label: 'OpenAI' },
-  { id: 'google', label: 'Google' },
+  { id: 'groq', label: 'Groq' },
 ];
 
 export function CredentialManager({
