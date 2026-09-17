@@ -281,6 +281,39 @@ a wrong answer instead of from us.
 
 ---
 
+## Workspace chat
+
+**The plainest surface in the product, and the one most able to lie.**
+
+A member opens `/chat` and talks to a model. There is no retrieval, no tool,
+no citation ledger — just the conversation. That makes it the only place here
+where an answer rests on nothing that can be checked, so two things are built
+in rather than hoped for.
+
+**It is told what it cannot reach, in the system prompt, in those words.** Ask
+a chat assistant about "my documents" and, with no tools and no instruction to
+the contrary, it will answer as though it had looked. A plausible summary of a
+file you actually have is worse than a refusal: the refusal sends you to
+Knowledge, and the summary sends you into a meeting. The prompt names the
+surfaces that *can* answer — Knowledge for documents, Research for the web,
+Chatbots for grounded answers — because "I cannot" is only useful with a
+"but there" after it.
+
+**The same sentence is on the empty state**, before anything is typed, rather
+than waiting to be discovered when the assistant declines.
+
+**A turn is written before the model runs.** The question is stored, then the
+stream begins. A turn that fails or times out leaves the question in the
+thread with the failure beside it. Losing what somebody typed because a
+provider was slow is the one failure a chat box must not have.
+
+Threads are `workspace_threads`, not the visitor `chat_conversations` next to
+them. Different principal, different retention, different table — see
+[docs/database.md](docs/database.md) §5 for what the schema leaves out on
+purpose, and why a second `messages` table would have been a bad idea.
+
+---
+
 ## Customer chatbots
 
 **A visitor is not a user with a low role. They hold no role at all.**

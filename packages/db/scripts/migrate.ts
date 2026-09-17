@@ -18,6 +18,7 @@ import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config as loadDotenv } from 'dotenv';
+import { tlsOptions } from './tls.js';
 import pg from 'pg';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -37,6 +38,8 @@ function checksum(content: string): string {
   return createHash('sha256').update(content.replace(/\r\n/g, '\n'), 'utf8').digest('hex');
 }
 
+
+
 async function main(): Promise<void> {
   const url = process.env.DATABASE_MIGRATION_URL ?? process.env.DATABASE_URL;
   if (!url) {
@@ -51,7 +54,7 @@ async function main(): Promise<void> {
   const safeTarget = url.replace(/\/\/([^:]+):([^@]+)@/, '//$1:***@');
   console.warn(`Migrating: ${safeTarget}`);
 
-  const client = new pg.Client({ connectionString: url });
+  const client = new pg.Client({ connectionString: url, ...(await tlsOptions(url)) });
   await client.connect();
 
   try {

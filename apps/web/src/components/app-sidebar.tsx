@@ -17,6 +17,7 @@ import {
   ProjectIcon,
   ResearchIcon,
   SearchIcon,
+  SparkIcon,
   SettingsIcon,
   UsersIcon,
   Wordmark,
@@ -44,7 +45,10 @@ const GROUPS: Array<{
 }> = [
   {
     heading: null,
-    items: [{ href: '/dashboard', label: 'Dashboard', Icon: DashboardIcon }],
+    items: [
+      { href: '/chat', label: 'Chat', Icon: SparkIcon },
+      { href: '/dashboard', label: 'Dashboard', Icon: DashboardIcon },
+    ],
   },
   {
     heading: 'Workspace',
@@ -81,13 +85,16 @@ const GROUPS: Array<{
 /**
  * What "New" can actually start.
  *
- * Each one is a page whose create form is the first thing on it, so the button
- * lands on the form rather than near it. There is deliberately no "New chat":
- * the product has no conversation surface, and a button that opened an empty
- * screen would be a promise the API cannot keep. Research is the closest real
- * thing — a question in, an answer with citations out — so it leads.
+ * Each one is a page whose create form — or, for chat, whose message box — is
+ * the first thing on it, so the button lands on the thing rather than near it.
+ *
+ * Chat leads because it is what someone opening this menu most often wants,
+ * and Research sits under it because the two are easy to confuse: chat has no
+ * tools and cites nothing, research reads pages and cites what it read. The
+ * one-line descriptions carry that difference at the point of choosing.
  */
 const CREATE = [
+  { href: '/chat', label: 'New chat', body: 'Just the conversation. No sources.', Icon: SparkIcon },
   {
     href: '/research',
     label: 'Ask research',

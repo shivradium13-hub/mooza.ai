@@ -50,6 +50,7 @@ const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   [Permission.RESEARCH_RUN]: 'Run web research tasks',
   [Permission.MCP_INVOKE]: 'Invoke tools on an external MCP server',
   [Permission.AGENT_RUN]: 'Run an agent, including delegating to one',
+  [Permission.CHAT_USE]: 'Hold a chat thread in the workspace',
 };
 
 interface SeededOrg {

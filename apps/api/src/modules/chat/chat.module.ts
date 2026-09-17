@@ -5,6 +5,8 @@ import { WidgetController } from './widget.controller.js';
 import { ChatbotsService } from './chatbots.service.js';
 import { VisitorService } from './visitor.service.js';
 import { SupportAgentService } from './support-agent.service.js';
+import { WorkspaceChatController } from './workspace-chat.controller.js';
+import { WorkspaceChatService } from './workspace-chat.service.js';
 import { KnowledgeModule } from '../knowledge/knowledge.module.js';
 import { AiModule } from '../ai/ai.module.js';
 
@@ -23,8 +25,14 @@ import { AiModule } from '../ai/ai.module.js';
  */
 @Module({
   imports: [KnowledgeModule, AiModule],
-  controllers: [ChatbotsController, ChatInboxController, PublicChatController, WidgetController],
-  providers: [ChatbotsService, VisitorService, SupportAgentService],
+  controllers: [
+    ChatbotsController,
+    ChatInboxController,
+    WorkspaceChatController,
+    PublicChatController,
+    WidgetController,
+  ],
+  providers: [ChatbotsService, VisitorService, SupportAgentService, WorkspaceChatService],
   exports: [ChatbotsService],
 })
 export class ChatModule {}

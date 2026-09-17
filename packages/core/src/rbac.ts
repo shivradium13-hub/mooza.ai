@@ -79,6 +79,20 @@ export const Permission = {
    * loop, and that is a capability rather than a read.
    */
   AGENT_RUN: 'agent:run',
+
+  /**
+   * Hold a chat thread in the workspace (Phase 9).
+   *
+   * Its own permission, alongside `RESEARCH_RUN` and for the same reason: a
+   * turn spends provider tokens on the organization's credential. It is
+   * deliberately NOT `PROJECT_CREATE` — chatting creates no project, and
+   * anyone reading the guard should not have to know that "create a project"
+   * had quietly come to mean "may spend money on a model".
+   *
+   * Not a viewer capability. A viewer may read this workspace without being
+   * able to bill it.
+   */
+  CHAT_USE: 'chat:use',
 } as const;
 
 export type Permission = (typeof Permission)[keyof typeof Permission];
@@ -100,6 +114,8 @@ const MEMBER_PERMISSIONS: readonly Permission[] = [
   // open web.
   Permission.MCP_INVOKE,
   Permission.AGENT_RUN,
+  // Again the same reasoning: a chat turn is a model call somebody pays for.
+  Permission.CHAT_USE,
 ];
 
 const ADMIN_PERMISSIONS: readonly Permission[] = [

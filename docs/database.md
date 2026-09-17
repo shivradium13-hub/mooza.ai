@@ -92,13 +92,55 @@ AAD binds ciphertext to `(organization_id, id, provider_id)` so a row cannot be 
 
 ---
 
-## 5. Conversations
+## 5. Conversations — IMPLEMENTED as workspace chat (0017)
 
-**`conversations`** — `id`, `organization_id`, `project_id NULL`, `user_id`, `agent_id NULL`, `chatbot_id NULL`, `title`, `model_id NULL`, `metadata jsonb`, `last_message_at`, timestamps, `deleted_at`.
+Shipped as **`workspace_threads`** and **`workspace_thread_messages`** rather
+than `conversations` / `messages`. The rename is not cosmetic: `chat_messages`
+already exists (§9) and holds an anonymous visitor's transcript, and two tables
+called "messages" in one schema get confused at a call site eventually. The one
+that gets confused is the one facing the open internet.
 
-**`messages`** — `id`, `organization_id`, `conversation_id`, `role` (`system`|`user`|`assistant`|`tool`), `content text`, `content_blocks jsonb` (attachments, citations, tool calls), `model_id NULL`, `input_tokens`, `output_tokens`, `cost_usd numeric(18,6)`, `finish_reason`, `error_code NULL`, `parent_message_id NULL` (edit/regenerate branching), `created_at`.
+**`workspace_threads`** — `id`, `organization_id`, `user_id`, `project_id NULL`,
+`title`, `model_id NULL`, `message_count`, `created_at`, `last_message_at`.
 
-Indexes: `(conversation_id, created_at)`, plus a GIN FTS index on `content` for conversation search (§16).
+**`workspace_thread_messages`** — `id`, `organization_id`, `thread_id`,
+`role` (`user`|`assistant`), `content`, `model_id NULL`, `input_tokens`,
+`output_tokens`, `error_code NULL`, `created_at`.
+
+Indexes: `(organization_id, user_id, last_message_at DESC)` for the thread list,
+`(organization_id, thread_id, created_at)` for the transcript.
+
+### What the §36 shape has that this does not, and why
+
+- **`agent_id`, `content_blocks`, `role = 'tool'`** — the workspace assistant has
+  no tools. It cannot retrieve, cite or call anything, and the system prompt
+  says so. Columns for tool calls and citation blocks would be columns that are
+  always null, quietly implying a capability the surface does not have.
+- **`cost_usd`** — cost is written by the gateway to `usage_records`, once, for
+  every call it makes. A second copy on the message is a number that can
+  disagree with the ledger, and when they disagree there is no way to tell
+  which one is wrong.
+- **`parent_message_id`** — edit-and-regenerate branching. Not built, so not
+  modelled; a nullable self-reference nothing writes is a schema making a
+  promise the product has not kept.
+- **A GIN FTS index on `content`** — searching your own chat history is §16 and
+  is not built either. The index would be paid for on every insert to serve a
+  query nothing issues.
+- **`deleted_at`** — deleting a thread deletes it, and the messages go with it
+  by cascade. Soft deletion is right for things other people depend on; a
+  person's own chat thread is not one of them, and "deleted" meaning "hidden
+  from you and still in our database" is not what the button appears to say.
+
+### Whose thread it is
+
+`user_id` is `NOT NULL` and every read and write in `WorkspaceChatService`
+filters on it. Say precisely what that is: RLS gives **tenant** isolation, so no
+organization can reach another's threads under any query. It does **not** give
+per-user isolation, because `withTenant()` binds only the organization —
+`current_user_id()` is deliberately NULL inside a tenant transaction (§0002),
+and widening that would change the primitive the isolation tests rest on. So
+per-user scoping is a query-layer property, written in one service for exactly
+that reason.
 
 ---
 
@@ -333,7 +375,7 @@ Append-only: the `moka_app` role holds `INSERT` and `SELECT` grants but **no `UP
 
 Against the §36 list, with deviations noted:
 
-`users`, `organizations`, `organization_members`, `roles`, `permissions`, `role_permissions`*, `sessions`*, `projects`, `conversations`, `messages`, `providers`, `models`, `credentials`, `agents`, `agent_tools`, `agent_permissions`, `agent_knowledge`*, `agent_executions`*, `tools`, `tool_executions`, `knowledge_sources`, `knowledge_documents`, `knowledge_chunks`, `knowledge_embeddings`*, `embedding_models`*, `memories`, `chatbots`, `chatbot_deployments`, `subscriptions`, `plans`, `plan_entitlements`*, `entitlement_overrides`*, `usage_records`, `credits`, `credit_transactions`*, `chatbot_sources`*, `chat_conversations`*, `chat_messages`*, `research_runs`*, `research_sources`*, `api_keys`, `mcp_servers`, `mcp_tools`, `automations`, `automation_runs`, `approvals`, `audit_logs`
+`users`, `organizations`, `organization_members`, `roles`, `permissions`, `role_permissions`*, `sessions`*, `projects`, `conversations`, `messages`, `providers`, `models`, `credentials`, `agents`, `agent_tools`, `agent_permissions`, `agent_knowledge`*, `agent_executions`*, `tools`, `tool_executions`, `knowledge_sources`, `knowledge_documents`, `knowledge_chunks`, `knowledge_embeddings`*, `embedding_models`*, `memories`, `chatbots`, `chatbot_deployments`, `subscriptions`, `plans`, `plan_entitlements`*, `entitlement_overrides`*, `usage_records`, `credits`, `credit_transactions`*, `chatbot_sources`*, `chat_conversations`*, `chat_messages`*, `workspace_threads`*, `workspace_thread_messages`*, `research_runs`*, `research_sources`*, `api_keys`, `mcp_servers`, `mcp_tools`, `automations`, `automation_runs`, `approvals`, `audit_logs`
 
 `*` = added beyond the §36 list, each for a stated reason:
 
@@ -343,6 +385,7 @@ Against the §36 list, with deviations noted:
 - **`credit_transactions`** — the §36 list has `credits` (a balance) but no ledger. A balance with no ledger is a number nobody can explain to a customer disputing it, so the balance became a cache and the ledger became the record.
 - **`chatbot_sources`** — the publication boundary between a chatbot and the knowledge it may quote. §36 assumed one implicit scope; making it an explicit join is what lets an organization decide, per chatbot, which internal documents become readable by the public.
 - **`chat_conversations` / `chat_messages`** — the §36 list has `conversations` and `messages` for STAFF chat. A visitor conversation is a different thing with a different principal, a different retention policy and a different token, and merging them would put an anonymous stranger's transcript in the same table as a member's.
+- **`workspace_threads` / `workspace_thread_messages`** — the §36 `conversations` and `messages`, renamed. `chat_messages` was already taken by the visitor transcript, and a schema with two "messages" tables invites the one mistake nobody can afford: reading or writing a stranger's conversation where a member's was meant. See §5 for the columns deliberately left out.
 - **`research_runs` / `research_sources`** — §36 has no table for web research, and the citation ledger cannot live in `agent_executions`: a research run happens with or without an agent, and the evidence has to outlive the conversation that prompted it to be auditable at all.
 - **`role_permissions`, `sessions`, `agent_knowledge`, `credit_transactions`** — required join tables and ledgers, not redundant entities.
 

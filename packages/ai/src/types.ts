@@ -141,7 +141,27 @@ export interface StreamError {
   readonly message: string;
 }
 
-export type StreamEvent = StreamTextDelta | StreamReasoningDelta | StreamDone | StreamError;
+/**
+ * Which model is about to answer.
+ *
+ * Emitted by the gateway once routing has resolved, BEFORE any text. A
+ * streamed answer otherwise never says what produced it — `done` carries the
+ * usage but not the identity — and "which model said this" is the first
+ * question asked about an answer somebody disputes. Adapters do not emit it;
+ * the gateway does, because the gateway is what chose.
+ */
+export interface StreamStart {
+  readonly type: 'start';
+  readonly providerId: string;
+  readonly modelId: string;
+}
+
+export type StreamEvent =
+  | StreamStart
+  | StreamTextDelta
+  | StreamReasoningDelta
+  | StreamDone
+  | StreamError;
 
 /* -------------------------------------------------------------------------- */
 /* Model registry                                                              */

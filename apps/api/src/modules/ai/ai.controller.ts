@@ -180,6 +180,9 @@ export class AiController {
         requestId,
       })) {
         switch (event.type) {
+          case 'start':
+            send('start', { provider: event.providerId, model: event.modelId });
+            break;
           case 'text':
             send('text', { text: event.text });
             break;

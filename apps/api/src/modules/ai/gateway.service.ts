@@ -262,6 +262,10 @@ export class GatewayService {
       });
       model = plan.primary;
 
+      // Announced before the first token, so a client watching the stream can
+      // label the answer while it is still being written.
+      yield { type: 'start', providerId: model.providerId, modelId: model.id };
+
       const adapter = await this.adapterFor(context, model);
 
       for await (const event of adapter.stream(request, model.id)) {

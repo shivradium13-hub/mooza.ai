@@ -257,3 +257,14 @@ export function SearchIcon(props: IconProps) {
     </Glyph>
   );
 }
+
+export function SparkIcon(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      {/* A four-point spark rather than a speech bubble: the bubble is already
+          Chatbots, and two identical glyphs in one nav is a coin toss. */}
+      <path d="M12 3.2c0 3.6 2 5.6 5.6 5.6-3.6 0-5.6 2-5.6 5.6 0-3.6-2-5.6-5.6-5.6 3.6 0 5.6-2 5.6-5.6Z" />
+      <path d="M17.8 14.6c0 1.9 1.1 3 3 3-1.9 0-3 1.1-3 3 0-1.9-1.1-3-3-3 1.9 0 3-1.1 3-3Z" />
+    </Glyph>
+  );
+}

@@ -6,6 +6,7 @@ export * from './usage.js';
 export * from './credentials.js';
 export * from './agents.js';
 export * from './chat.js';
+export * from './workspace-chat.js';
 export * from './research.js';
 export * from './billing.js';
 
@@ -38,6 +39,8 @@ export const RLS_PROTECTED_TABLES: readonly string[] = [
   'chatbot_deployments',
   'chat_conversations',
   'chat_messages',
+  'workspace_threads',
+  'workspace_thread_messages',
   'research_runs',
   'research_sources',
   'subscriptions',

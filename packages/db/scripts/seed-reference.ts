@@ -26,6 +26,7 @@
 import { config as loadDotenv } from 'dotenv';
 import pg from 'pg';
 import { seedPlans, seedRolesAndPermissions } from './seed.js';
+import { tlsOptions } from './tls.js';
 
 loadDotenv();
 
@@ -36,7 +37,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const client = new pg.Client({ connectionString: url });
+  const client = new pg.Client({ connectionString: url, ...(await tlsOptions(url)) });
   await client.connect();
 
   try {

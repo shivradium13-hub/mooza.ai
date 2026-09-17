@@ -283,20 +283,30 @@ and take the last certificate in the chain.
 
 So **`DATABASE_URL` and `DATABASE_MIGRATION_URL` must carry no `sslmode` parameter.** SSL is turned on by `DATABASE_SSL=true`, and the certificate is trusted through `DATABASE_CA_CERT`. Adding `sslmode` back turns full verification into a boot loop.
 
-Migrations run from your machine and reach the database through the public TCP proxy, whose hostname is not in the certificate, so that one connection does need `?sslmode=no-verify` on its URL. It is a one-off admin connection, not the runtime posture.
+**Admin connections from your machine verify too, since 0017.** They reach the database through the public TCP proxy, whose hostname (`x.proxy.rlwy.net`) is not one the certificate carries — so `pnpm db:migrate` and `pnpm db:seed:reference` used to be run with `?sslmode=no-verify`, which accepts any certificate at all. They now read the same `DATABASE_SSL` and `DATABASE_CA_CERT` the API does, plus `DATABASE_TLS_SERVERNAME` for the name to verify against:
+
+```bash
+DATABASE_TLS_SERVERNAME=postgres-ssl.railway.internal
+```
+
+That is **not** `rejectUnauthorized: false`. The chain is still checked against the CA and the certificate must still carry that name; all that changes is which name is required, because the proxy is a raw TCP forwarder to exactly that server. The schema owner's connection is the most privileged one in the system and should not have been the least protected.
+
+The runner refuses a connection string containing `sslmode` and says why, rather than letting it silently discard the CA as described above.
 
 ### 3.4 Run the migrations — from your machine, once
 
 Migrations are deliberately **not** in the container start command. Every replica would race to migrate on each deploy, and one failure would crash-loop the service. A migration is an operator action against a database, not a side effect of a container booting.
 
 ```bash
-DATABASE_MIGRATION_URL="postgresql://moka_migrator:<MIGRATOR_PASSWORD>@<DB_HOST>/moka_ai?sslmode=require" pnpm db:migrate
+DATABASE_SSL=true DATABASE_CA_CERT_FILE=./local/pg-root-ca.pem DATABASE_TLS_SERVERNAME=postgres-ssl.railway.internal DATABASE_MIGRATION_URL="postgresql://moka_migrator:<MIGRATOR_PASSWORD>@<PROXY_HOST>:<PROXY_PORT>/moka_ai" pnpm db:migrate
 ```
+
+`<PROXY_HOST>:<PROXY_PORT>` is the postgres service's public TCP proxy endpoint, from Railway → the database service → Settings → Networking. No `sslmode` — see §3.3b.
 
 Then seed the roles, permissions and plan catalogue. **On a production database this is `db:seed:reference`, not `db:seed`:**
 
 ```bash
-DATABASE_MIGRATION_URL="postgresql://moka_migrator:<MIGRATOR_PASSWORD>@<DB_HOST>/moka_ai?sslmode=no-verify" pnpm db:seed:reference
+DATABASE_SSL=true DATABASE_CA_CERT_FILE=./local/pg-root-ca.pem DATABASE_TLS_SERVERNAME=postgres-ssl.railway.internal DATABASE_MIGRATION_URL="postgresql://moka_migrator:<MIGRATOR_PASSWORD>@<PROXY_HOST>:<PROXY_PORT>/moka_ai" pnpm db:seed:reference
 ```
 
 `db:seed` does two unrelated jobs: it mirrors that reference data, and it creates two demo organizations whose owners share a password printed in this repository. It refuses to run when `NODE_ENV=production` for the second reason — but the first is not optional, because `organization_members.role_key` is a foreign key into `roles`.
@@ -311,8 +321,6 @@ constraint "organization_members_role_key_fkey"
 which reads as a bug in sign-up rather than as an empty `roles` table.
 
 `db:seed:reference` runs only the half that is not a fixture, and is safe in production.
-
-Note the `sslmode=no-verify`: this connection reaches the database through its public TCP proxy, whose hostname is not in the certificate. See §3.3b — the runtime connection is the one that must verify fully.
 
 Run migrations **before** the first deploy finishes, or at least before anyone uses the service. The API starts fine against an unmigrated database — readiness reports `schema: "ok"` because a database with no tables has no unprotected ones — so an empty database will not stop a deploy going live.
 

@@ -52,13 +52,20 @@ export default tseslint.config(
 
   // SECURITY: outbound HTTP is confined to packages/net
   //
-  // apps/web/src/lib/api-{server,browser}.ts are the documented exceptions.
-  // Both build URLs only from the configured API origin, via buildUrl(), which
-  // rejects any path that is not relative — so neither can be pointed at an
-  // attacker-chosen host.
+  // apps/web/src/lib/api-{server,browser}.ts and sse.ts are the documented
+  // exceptions. All three build URLs only from the configured API origin, via
+  // buildUrl(), which rejects any path that is not relative — so none can be
+  // pointed at an attacker-chosen host. sse.ts is separate from api-browser.ts
+  // only because it reads a response stream frame by frame instead of parsing
+  // one JSON body; the URL it requests is built the same way.
   {
     files: ['apps/**/*.ts', 'apps/**/*.tsx', 'packages/**/*.ts'],
-    ignores: ['packages/net/**', 'apps/web/src/lib/api-server.ts', 'apps/web/src/lib/api-browser.ts'],
+    ignores: [
+      'packages/net/**',
+      'apps/web/src/lib/api-server.ts',
+      'apps/web/src/lib/api-browser.ts',
+      'apps/web/src/lib/sse.ts',
+    ],
     rules: {
       'no-restricted-globals': [
         'error',
